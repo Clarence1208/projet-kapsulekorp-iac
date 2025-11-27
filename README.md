@@ -15,6 +15,19 @@ echo "your-public-key" >> ~/.ssh/authorized_keys
 ## Complete the inventory.ini file with the managed nodes IP addresses
 This need to be done in the ansible controller
 
+## Remove inventory.ini from the tracking of git (mostly here for futur projects)
+it need to be done in the ansible controller to avoid pushing sensitive data to a public repository
+
+```bash
+git update-index --skip-worktree inventory.ini
+```
+
+undo this command with
+
+```bash
+git update-index --no-skip-worktree inventory.ini
+```
+
 ## Check connectivity from ansible controller to managed nodes
 This need to be done in the ansible controller
 
