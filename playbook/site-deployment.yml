@@ -2,15 +2,7 @@
   hosts: all
   become: true
   roles:
-    - system-setup
-
-- name: Configure web servers (staging + production)
-  hosts: web
-  become: true
-  roles:
-    - nginx
-    - php-fpm
-    - deploy-app
+    - common-setup
 
 - name: Configure dbservers (staging + production)
   hosts: db
@@ -18,3 +10,11 @@
   roles:
     - mysql-setup
     - setup-schema
+
+- name: Configure web servers (staging + production)
+  hosts: web
+  become: true
+  roles:
+    - nginx-setup
+    - php-fpm-setup
+    - deploy-app
