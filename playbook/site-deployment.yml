@@ -10,7 +10,7 @@
   roles:
     - nginx
     - php-fpm
-    - app
+    - deploy-app
 
 - name: Configure dbservers (staging + production)
   hosts: db
