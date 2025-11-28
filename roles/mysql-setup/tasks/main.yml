@@ -1,42 +1,39 @@
-- name: "Install & configure MySQL server"
-  become: yes
-  tasks:
-    - name: Install MySQL server + python deps for MySQL ansible module
-      apt:
-        name:
-          - mysql-server
-          - python3-pymysql # This is to be able to use community.mysql modules as Ansible does not connect natively to MySQL clients
-        state: present
+- name: Install MySQL server + python deps for MySQL ansible module
+  apt:
+    name:
+      - mysql-server
+      - python3-pymysql # This is to be able to use community.mysql modules as Ansible does not connect natively to MySQL clients
+    state: present
 
-    - name: Ensure mysql is enabled and running
-      service:
-        name: mysql
-        state: started
-        enabled: true
+- name: Ensure mysql is enabled and running
+  service:
+    name: mysql
+    state: started
+    enabled: true
 
-    - name: Set MySQL root password
-      community.mysql.mysql_user:
-        name: root
-        host: localhost
-        # TODO: Consider using two different passwords for production and staging
-        password: "{{ mysql_root_password }}"
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-        state: present
-      no_log: true # To avoid logging sensitive information
+- name: Set MySQL root password
+  community.mysql.mysql_user:
+    name: root
+    host: localhost
+    # TODO: Consider using two different passwords for production and staging
+    password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
+  no_log: true # To avoid logging sensitive information
 
-    - name: Ensure root user uses password auth
-      community.mysql.mysql_user:
-        name: root
-        host_all: true
-        password: "{{ mysql_root_password }}"
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-        state: present
-      no_log: true
+- name: Ensure root user uses password auth
+  community.mysql.mysql_user:
+    name: root
+    host_all: true
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+  no_log: true
 
-    - name: Test MySQL root login
-      community.mysql.mysql_info:
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-      register: mysql_info
-      no_log: true
+- name: Test MySQL root login
+  community.mysql.mysql_info:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  register: mysql_info
+  no_log: true
