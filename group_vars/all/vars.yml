@@ -1,0 +1,7 @@
+app_name: kapsulekorp
+app_root: /var/www/html
+
+db_name: kapsulekorp
+db_user: kapsulekorp-user
+
+mysql_bind_address: "0.0.0.0" # for remote access
