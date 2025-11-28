@@ -1,0 +1,16 @@
+- name: "Update & Upgrade all packages"
+  ansible.builtin.apt:
+  upgrade: yes
+  update_cache: yes
+  cache_valid_time: 86400  # One day
+- name: "Install common utilities"
+  ansible.builtin.apt:
+    name:
+      - vim
+      - git
+      - curl
+      - wget
+    state: present
+- name: "Set Time Zone to Paris"
+  community.general.timezone:
+    name: "Europe/Paris"
