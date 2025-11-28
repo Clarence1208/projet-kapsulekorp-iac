@@ -1,0 +1,38 @@
+- name: Create application database
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+
+- name: Create application DB user
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    priv: "{{ db_name }}.*:ALL"
+    host: "%"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+  no_log: true
+
+- name: Copy SQL schema to db server
+  ansible.builtin.copy:
+    src: ../../files/schema.sql
+    dest: /tmp/schema.sql
+    mode: "0644"
+
+- name: Import schema into database
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    state: import
+    target: /tmp/schema.sql
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Bind MySQL to all interfaces for remote access
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: "bind-address = {{ mysql_bind_address }}"
+  notify: Restart mysql

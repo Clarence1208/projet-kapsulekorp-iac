@@ -1,0 +1,20 @@
+- name: Base setup on all hosts
+  hosts: all
+  become: true
+  roles:
+    - system-setup
+
+- name: Configure web servers (staging + production)
+  hosts: web
+  become: true
+  roles:
+    - nginx
+    - php-fpm
+    - app
+
+- name: Configure dbservers (staging + production)
+  hosts: db
+  become: true
+  roles:
+    - mysql-setup
+    - setup-schema

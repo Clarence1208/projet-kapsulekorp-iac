@@ -5,7 +5,7 @@
       apt:
         name:
           - mysql-server
-          - python3-pymysql
+          - python3-pymysql # This is to be able to use community.mysql modules as Ansible does not connect natively to MySQL clients
         state: present
 
     - name: Ensure mysql is enabled and running
@@ -18,6 +18,7 @@
       community.mysql.mysql_user:
         name: root
         host: localhost
+        # TODO: Consider using two different passwords for production and staging
         password: "{{ mysql_root_password }}"
         login_unix_socket: /var/run/mysqld/mysqld.sock
         state: present
