@@ -37,4 +37,12 @@ ansible all -m ping -i inventory.ini
 
 if some pings fails try to ssh into the managed node by hand to add the host to the list of known hosts.
 
-## 
+## Modify the {.vars/secret-vars.yml} file to add the correct sudo password for the managed nodes
+This need to be done in the ansible controller
+
+## Encrypt the {.vars/secret-vars.yml} file
+This need to be done in the ansible controller
+
+```bash
+ansible-vault encrypt vars/secret-vars.yml
+```

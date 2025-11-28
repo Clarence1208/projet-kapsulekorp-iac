@@ -1,3 +1,11 @@
+- name: "Determine MySQL root password based on environment"
+  set_fact:
+    mysql_root_password: >-
+      {{
+        (inventory_hostname in groups['production-db'])
+          | ternary(mysql_root_password_prod, mysql_root_password_staging)
+      }}
+
 - name: Install MySQL server + python deps for MySQL ansible module
   apt:
     name:
@@ -11,29 +19,25 @@
     state: started
     enabled: true
 
-- name: Set MySQL root password
-  community.mysql.mysql_user:
-    name: root
-    host: localhost
-    # TODO: Consider using two different passwords for production and staging
-    password: "{{ mysql_root_password }}"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-    state: present
-  no_log: true # To avoid logging sensitive information
+- name: Check if MySQL root can login without password over socket
+  ansible.builtin.command: >
+    mysql -u root -S /var/run/mysqld/mysqld.sock -e "SELECT 1"
+  register: mysql_root_pwless
+  failed_when: false
+  changed_when: false
 
-- name: Ensure root user uses password auth
-  community.mysql.mysql_user:
-    name: root
-    host_all: true
-    password: "{{ mysql_root_password }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    state: present
+- name: Set MySQL root password when currently passwordless
+  ansible.builtin.command: >
+    mysql -u root -S /var/run/mysqld/mysqld.sock
+    -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '{{ mysql_root_password }}';"
+  when: mysql_root_pwless.rc == 0
   no_log: true
 
-- name: Test MySQL root login
-  community.mysql.mysql_info:
+- name: Test root MySQL login
+  community.mysql.mysql_query:
     login_user: root
     login_password: "{{ mysql_root_password }}"
-  register: mysql_info
+    query:
+      - "SELECT 1"
+  register: mysql_root_test
   no_log: true

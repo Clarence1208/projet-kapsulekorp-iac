@@ -1,5 +1,0 @@
-app_name: kapsulekorp
-app_root: /var/www/html
-
-db_name: kapsulekorp
-db_user: kapsulekorp
