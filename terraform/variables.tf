@@ -33,3 +33,9 @@ variable "production_db_count" {
   type        = number
   default     = 1
 }
+
+variable "vault_password" {
+  description = "Ansible Vault password"
+  type        = string
+  sensitive   = true
+}
