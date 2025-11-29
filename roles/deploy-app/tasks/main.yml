@@ -8,7 +8,7 @@
       }}
     db_password: >-
       {{
-        (inventory_hostname in groups['production-web'])
+        (inventory_hostname in groups['production'])
           | ternary(db_password_prod, db_password_staging)
       }}
 
@@ -35,3 +35,42 @@
     owner: www-data
     group: www-data
     mode: "0644"
+
+- name: "Find PHP-FPM socket"
+  ansible.builtin.find:
+    paths: /run/php
+    patterns: "php*-fpm.sock"
+    file_type: any
+  register: php_socket_find
+
+- name: "Set PHP-FPM socket path fact"
+  ansible.builtin.set_fact:
+    php_fpm_socket_path: "{{ php_socket_find.files[0].path }}"
+  when: php_socket_find.matched > 0
+
+- name: "Fail if PHP-FPM socket not found"
+  ansible.builtin.fail:
+    msg: "Could not find PHP-FPM socket in /run/php"
+  when: php_socket_find.matched == 0
+
+- name: "Deploy Nginx site configuration"
+  ansible.builtin.template:
+    src: templates/nginx-app.conf.j2
+    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Nginx
+
+- name: "Enable Nginx site"
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
+    state: link
+  notify: Restart Nginx
+
+- name: "Remove default Nginx site"
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart Nginx

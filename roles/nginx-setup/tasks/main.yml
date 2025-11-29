@@ -2,6 +2,8 @@
   ansible.builtin.apt:
     name: nginx
     state: present
+  register: nginx_install
+  changed_when: nginx_install.cache_updated or nginx_install.changed
 
 - name: Gather service facts
   ansible.builtin.service_facts:
@@ -23,12 +25,14 @@
   ansible.builtin.copy:
     src: hello-world.html
     dest: /var/www/html/index.html
+  when: nginx_install.changed
 
 - name: "Read Hello World page content"
   ansible.builtin.uri:
     url: http://127.0.0.1
     return_content: yes
   register: hello_page
+  when: nginx_install.changed
 
 - name: "Assert hello world well deployed"
   ansible.builtin.assert:
@@ -36,3 +40,4 @@
       - hello_page.status == 200
       - hello_page.content == lookup('file', 'hello-world.html')
     fail_msg: "Hello World page is not deployed correctly, check manually."
+  when: nginx_install.changed
