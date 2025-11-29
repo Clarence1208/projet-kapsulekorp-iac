@@ -71,19 +71,21 @@ func (r *LinuxVMResource) Create(ctx context.Context, req resource.CreateRequest
 
 	name := plan.Name.ValueString()
 	distro := "ubuntu" // Default if not specified in logic, though plan usually handles defaults if set in schema.
-	if !plan.Distro.IsNull() {
+	if !plan.Distro.IsNull() && !plan.Distro.IsUnknown() {
 		distro = plan.Distro.ValueString()
+	} else {
+		plan.Distro = types.StringValue(distro)
 	}
 
 	args := []string{"create", distro, name}
 
 	// CRITICAL FIX: Handle 'Arch' being Computed but Optional.
-	// If the user didn't specify arch, it comes in as Null.
+	// If the user didn't specify arch, it comes in as Null (if optional) or Unknown (if computed).
 	// We must set a concrete value (e.g., "native") in the plan so Terraform knows what happened.
 	arch := "native"
-	if !plan.Arch.IsNull() {
+	if !plan.Arch.IsNull() && !plan.Arch.IsUnknown() {
 		arch = plan.Arch.ValueString()
-		args = append([]string{"create", "--arch", arch, distro, name})
+		args = []string{"create", "--arch", arch, distro, name}
 	} else {
 		// Set the default "native" into the plan object so it gets saved to state
 		plan.Arch = types.StringValue(arch)
