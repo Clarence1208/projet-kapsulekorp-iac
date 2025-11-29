@@ -4,4 +4,4 @@ orbstack-teraform-integration/terraform-provider-orbstack
 terraform.tfstate
 terraform.tfstate.backup
 .terraform.tfstate.lock.info
-terraform.lock.hcl
+.terraform.lock.hcl

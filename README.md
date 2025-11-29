@@ -101,3 +101,9 @@ cd orbstack-teraform-integration
 go build -o terraform-provider-orbstack
 cd ..
 ```
+
+## run terraform commands
+
+```bash
+terraform apply -var="vault_password=YOUR_ANSIBLE_VAULT_PASSWORD"
+```
