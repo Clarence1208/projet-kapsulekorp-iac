@@ -5,5 +5,3 @@ db_name: kapsulekorp
 db_user: kapsulekorp-user
 
 mysql_bind_address: "0.0.0.0" # for remote access
-
-php_version: "8.5"
