@@ -1,2 +1,5 @@
 .idea
 inventory.ini
+orbstack-teraform-integration/terraform-provider-orbstack
+terraform.tfstate
+terraform.tfstate.backup
