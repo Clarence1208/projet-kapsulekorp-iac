@@ -33,7 +33,7 @@
 
 - name: Copy SQL schema to db server
   ansible.builtin.copy:
-    src: ../files/schema.sql
+    src: files/schema.sql
     dest: /tmp/schema.sql
     mode: "0644"
 

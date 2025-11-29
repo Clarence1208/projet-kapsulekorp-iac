@@ -2,13 +2,16 @@
   ansible.builtin.apt:
     name: nginx
     state: present
-    enable: true
 
-- name: "Ensure Apache is stopped"
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Ensure Apache is stopped (if installed)
   ansible.builtin.service:
     name: apache2
     state: stopped
     enabled: no
+  when: "'apache2.service' in ansible_facts.services"
 
 - name: "Start Nginx"
   ansible.builtin.service:
@@ -18,14 +21,18 @@
 
 - name: "Deploy Hello World page"
   ansible.builtin.copy:
-    src: ../../files/test/hello-world.html
+    src: hello-world.html
     dest: /var/www/html/index.html
 
-- name: "Hello world page deployed"
-  assert:
+- name: "Read Hello World page content"
+  ansible.builtin.uri:
+    url: http://127.0.0.1
+    return_content: yes
+  register: hello_page
+
+- name: "Assert hello world well deployed"
+  ansible.builtin.assert:
     that:
-      - ansible.builtin.uri:
-          url: http://127.0.0.1
-          return_content: yes
-            .content | search("Hello, World!")
-    msg: "Hello World page is not deployed correctly, check manually."
+      - hello_page.status == 200
+      - hello_page.content == lookup('file', 'hello-world.html')
+    fail_msg: "Hello World page is not deployed correctly, check manually."

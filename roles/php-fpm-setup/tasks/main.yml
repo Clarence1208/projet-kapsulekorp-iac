@@ -1,12 +1,14 @@
+- import_tasks: prerequirements.yml
+
 - name: Install PHP-FPM and dependencies
   ansible.builtin.apt:
     name:
-      - php-fpm
-      - php-mysql
+      - "php{{ php_version }}-fpm"
+      - "php{{ php_version }}-mysql"
     state: present
 
 - name: Ensure PHP-FPM service is started and enabled
   ansible.builtin.service:
-    name: php-fpm
+    name: "php{{ php_version }}-fpm"
     state: started
     enabled: yes
