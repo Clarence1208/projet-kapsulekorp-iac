@@ -1,0 +1,1219 @@
+~/Documents/infra-as-code/projet-kapsulekorp-iac git:[feat/ansible-part]
+ansible-playbook --ask-vault-pass playbook/site-deployment.yml
+Vault password:
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+
+PLAY [Base setup on all hosts] *****************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************************************************************************************************************
+[WARNING]: Host 'staging-web2' is using the discovered Python interpreter at '/usr/bin/python3.13', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [staging-web2]
+[WARNING]: Host 'prod-web1' is using the discovered Python interpreter at '/usr/bin/python3.13', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [prod-web1]
+[WARNING]: Host 'staging-db1' is using the discovered Python interpreter at '/usr/bin/python3.13', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [staging-db1]
+[WARNING]: Host 'prod-web3' is using the discovered Python interpreter at '/usr/bin/python3.13', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [prod-web3]
+[WARNING]: Host 'prod-db1' is using the discovered Python interpreter at '/usr/bin/python3.13', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [prod-db1]
+[WARNING]: Host 'staging-web1' is using the discovered Python interpreter at '/usr/bin/python3.13', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [staging-web1]
+[WARNING]: Host 'prod-web2' is using the discovered Python interpreter at '/usr/bin/python3.13', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [prod-web2]
+
+TASK [common-setup : Update & Upgrade all packages] ********************************************************************************************************************************************************************
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [staging-db1]
+ok: [staging-web1]
+ok: [prod-web3]
+ok: [prod-db1]
+
+TASK [common-setup : Install common utilities] *************************************************************************************************************************************************************************
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [staging-db1]
+ok: [staging-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+ok: [prod-db1]
+
+TASK [common-setup : Set Time Zone to Paris] ***************************************************************************************************************************************************************************
+ok: [staging-web2]
+ok: [staging-web1]
+ok: [staging-db1]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+ok: [prod-db1]
+
+PLAY [Configure dbservers (staging + production)] **********************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************************************************************************************************************
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [mysql-setup : Determine MySQL root password based on environment] ************************************************************************************************************************************************
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [mysql-setup : Install MySQL server + python deps for MySQL ansible module] ***************************************************************************************************************************************
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [mysql-setup : Ensure mysql is enabled and running] ***************************************************************************************************************************************************************
+ok: [prod-db1]
+ok: [staging-db1]
+
+TASK [mysql-setup : Check if MySQL root can login without password over socket] ****************************************************************************************************************************************
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [mysql-setup : Set MySQL root password when currently passwordless] ***********************************************************************************************************************************************
+skipping: [staging-db1]
+skipping: [prod-db1]
+
+TASK [mysql-setup : Test root MySQL login] *****************************************************************************************************************************************************************************
+[WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+[DEPRECATION WARNING]: Importing 'to_native' from 'ansible.module_utils._text' is deprecated. This feature will be removed from ansible-core version 2.24. Use ansible.module_utils.common.text.converters instead.
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [setup-schema : Determine MySQL root password based on environment] ***********************************************************************************************************************************************
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [setup-schema : Create application database] **********************************************************************************************************************************************************************
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [setup-schema : Ensure application DB user exists with correct password & plugin] *********************************************************************************************************************************
+changed: [prod-db1]
+changed: [staging-db1]
+
+TASK [setup-schema : Copy SQL schema to db server] *********************************************************************************************************************************************************************
+ok: [staging-db1]
+ok: [prod-db1]
+
+TASK [setup-schema : Import schema into database] **********************************************************************************************************************************************************************
+changed: [prod-db1]
+changed: [staging-db1]
+
+TASK [setup-schema : Bind MySQL to all interfaces for remote access] ***************************************************************************************************************************************************
+ok: [prod-db1]
+ok: [staging-db1]
+
+TASK [setup-schema : Restart mysql] ************************************************************************************************************************************************************************************
+changed: [prod-db1]
+changed: [staging-db1]
+
+PLAY [Configure web servers (staging + production)] ********************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web3]
+ok: [prod-web2]
+
+TASK [nginx-setup : Install Nginx] *************************************************************************************************************************************************************************************
+ok: [prod-web3]
+ok: [prod-web1]
+ok: [staging-web2]
+ok: [prod-web2]
+ok: [staging-web1]
+
+TASK [nginx-setup : Gather service facts] ******************************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [prod-web3]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+
+TASK [nginx-setup : Ensure Apache is stopped (if installed)] ***********************************************************************************************************************************************************
+skipping: [staging-web1]
+skipping: [staging-web2]
+skipping: [prod-web1]
+skipping: [prod-web2]
+skipping: [prod-web3]
+
+TASK [nginx-setup : Start Nginx] ***************************************************************************************************************************************************************************************
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [staging-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+
+TASK [nginx-setup : Deploy Hello World page] ***************************************************************************************************************************************************************************
+skipping: [staging-web1]
+skipping: [staging-web2]
+skipping: [prod-web1]
+skipping: [prod-web2]
+skipping: [prod-web3]
+
+TASK [nginx-setup : Read Hello World page content] *********************************************************************************************************************************************************************
+skipping: [staging-web1]
+skipping: [staging-web2]
+skipping: [prod-web1]
+skipping: [prod-web2]
+skipping: [prod-web3]
+
+TASK [nginx-setup : Assert hello world well deployed] ******************************************************************************************************************************************************************
+skipping: [staging-web1]
+skipping: [staging-web2]
+skipping: [prod-web1]
+skipping: [prod-web2]
+skipping: [prod-web3]
+
+TASK [php-fpm-setup : Install PHP-FPM and dependencies] ****************************************************************************************************************************************************************
+ok: [prod-web1]
+ok: [prod-web3]
+ok: [staging-web2]
+ok: [staging-web1]
+ok: [prod-web2]
+
+TASK [php-fpm-setup : Gather service facts] ****************************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web3]
+ok: [prod-web2]
+
+TASK [php-fpm-setup : Detect PHP-FPM service name] *********************************************************************************************************************************************************************
+skipping: [staging-web1] => (item={'key': 'console-setup.sh', 'value': {'name': 'console-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'cron', 'value': {'name': 'cron', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'dbus', 'value': {'name': 'dbus', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'keyboard-setup.sh', 'value': {'name': 'keyboard-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'console-setup.sh', 'value': {'name': 'console-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'kmod', 'value': {'name': 'kmod', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'cron', 'value': {'name': 'cron', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'nginx', 'value': {'name': 'nginx', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'dbus', 'value': {'name': 'dbus', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'php8.4-fpm', 'value': {'name': 'php8.4-fpm', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'keyboard-setup.sh', 'value': {'name': 'keyboard-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'procps', 'value': {'name': 'procps', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'nginx', 'value': {'name': 'nginx', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'ssh', 'value': {'name': 'ssh', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'php8.4-fpm', 'value': {'name': 'php8.4-fpm', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'apt-daily-upgrade.service', 'value': {'name': 'apt-daily-upgrade.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'console-setup.sh', 'value': {'name': 'console-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'procps', 'value': {'name': 'procps', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'apt-daily.service', 'value': {'name': 'apt-daily.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'cron', 'value': {'name': 'cron', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'ssh', 'value': {'name': 'ssh', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'auditd.service', 'value': {'name': 'auditd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'apt-daily-upgrade.service', 'value': {'name': 'apt-daily-upgrade.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus', 'value': {'name': 'dbus', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'connman.service', 'value': {'name': 'connman.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'apt-daily.service', 'value': {'name': 'apt-daily.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'keyboard-setup.sh', 'value': {'name': 'keyboard-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'console-getty.service', 'value': {'name': 'console-getty.service', 'state': 'running', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'auditd.service', 'value': {'name': 'auditd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'console-screen.service', 'value': {'name': 'console-screen.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'nginx', 'value': {'name': 'nginx', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'chrony.service', 'value': {'name': 'chrony.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'console-setup.service', 'value': {'name': 'console-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'php8.4-fpm', 'value': {'name': 'php8.4-fpm', 'state': 'running', 'source': 'sysv'}})
+skipping: [prod-web2] => (item={'key': 'console-setup.sh', 'value': {'name': 'console-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'connman.service', 'value': {'name': 'connman.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'cron.service', 'value': {'name': 'cron.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'procps', 'value': {'name': 'procps', 'state': 'running', 'source': 'sysv'}})
+skipping: [prod-web2] => (item={'key': 'cron', 'value': {'name': 'cron', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'console-getty.service', 'value': {'name': 'console-getty.service', 'state': 'running', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dbus.service', 'value': {'name': 'dbus.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ssh', 'value': {'name': 'ssh', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'console-screen.service', 'value': {'name': 'console-screen.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus', 'value': {'name': 'dbus', 'state': 'running', 'source': 'sysv'}})
+skipping: [prod-web1] => (item={'key': 'apt-daily-upgrade.service', 'value': {'name': 'apt-daily-upgrade.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'display-manager.service', 'value': {'name': 'display-manager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'console-setup.service', 'value': {'name': 'console-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'keyboard-setup.sh', 'value': {'name': 'keyboard-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [prod-web1] => (item={'key': 'apt-daily.service', 'value': {'name': 'apt-daily.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dmesg.service', 'value': {'name': 'dmesg.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'cron.service', 'value': {'name': 'cron.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'nginx', 'value': {'name': 'nginx', 'state': 'running', 'source': 'sysv'}})
+skipping: [prod-web1] => (item={'key': 'auditd.service', 'value': {'name': 'auditd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dpkg-db-backup.service', 'value': {'name': 'dpkg-db-backup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'dbus.service', 'value': {'name': 'dbus.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'php8.4-fpm', 'value': {'name': 'php8.4-fpm', 'state': 'running', 'source': 'sysv'}})
+skipping: [prod-web1] => (item={'key': 'chrony.service', 'value': {'name': 'chrony.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'e2scrub_all.service', 'value': {'name': 'e2scrub_all.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'console-setup.sh', 'value': {'name': 'console-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [prod-web2] => (item={'key': 'procps', 'value': {'name': 'procps', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'display-manager.service', 'value': {'name': 'display-manager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'connman.service', 'value': {'name': 'connman.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'e2scrub_reap.service', 'value': {'name': 'e2scrub_reap.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'cron', 'value': {'name': 'cron', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'dmesg.service', 'value': {'name': 'dmesg.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'console-getty.service', 'value': {'name': 'console-getty.service', 'state': 'running', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ssh', 'value': {'name': 'ssh', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web1] => (item={'key': 'emergency.service', 'value': {'name': 'emergency.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus', 'value': {'name': 'dbus', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'dpkg-db-backup.service', 'value': {'name': 'dpkg-db-backup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'console-screen.service', 'value': {'name': 'console-screen.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'apt-daily-upgrade.service', 'value': {'name': 'apt-daily-upgrade.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'fstrim.service', 'value': {'name': 'fstrim.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'keyboard-setup.sh', 'value': {'name': 'keyboard-setup.sh', 'state': 'stopped', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'e2scrub_all.service', 'value': {'name': 'e2scrub_all.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'console-setup.service', 'value': {'name': 'console-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'apt-daily.service', 'value': {'name': 'apt-daily.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'getty-static.service', 'value': {'name': 'getty-static.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'nginx', 'value': {'name': 'nginx', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'e2scrub_reap.service', 'value': {'name': 'e2scrub_reap.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'cron.service', 'value': {'name': 'cron.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'auditd.service', 'value': {'name': 'auditd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'getty@tty1.service', 'value': {'name': 'getty@tty1.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'php8.4-fpm', 'value': {'name': 'php8.4-fpm', 'state': 'running', 'source': 'sysv'}})
+skipping: [staging-web2] => (item={'key': 'emergency.service', 'value': {'name': 'emergency.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus.service', 'value': {'name': 'dbus.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'chrony.service', 'value': {'name': 'chrony.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'initrd-cleanup.service', 'value': {'name': 'initrd-cleanup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'fstrim.service', 'value': {'name': 'fstrim.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'procps', 'value': {'name': 'procps', 'state': 'running', 'source': 'sysv'}})
+skipping: [prod-web1] => (item={'key': 'display-manager.service', 'value': {'name': 'display-manager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'connman.service', 'value': {'name': 'connman.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'initrd-parse-etc.service', 'value': {'name': 'initrd-parse-etc.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'getty-static.service', 'value': {'name': 'getty-static.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ssh', 'value': {'name': 'ssh', 'state': 'running', 'source': 'sysv'}})
+skipping: [prod-web1] => (item={'key': 'dmesg.service', 'value': {'name': 'dmesg.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'console-getty.service', 'value': {'name': 'console-getty.service', 'state': 'running', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'initrd-switch-root.service', 'value': {'name': 'initrd-switch-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'getty@tty1.service', 'value': {'name': 'getty@tty1.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'apt-daily-upgrade.service', 'value': {'name': 'apt-daily-upgrade.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dpkg-db-backup.service', 'value': {'name': 'dpkg-db-backup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'console-screen.service', 'value': {'name': 'console-screen.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'initrd-udevadm-cleanup-db.service', 'value': {'name': 'initrd-udevadm-cleanup-db.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'initrd-cleanup.service', 'value': {'name': 'initrd-cleanup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'apt-daily.service', 'value': {'name': 'apt-daily.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'e2scrub_all.service', 'value': {'name': 'e2scrub_all.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'console-setup.service', 'value': {'name': 'console-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'kbd.service', 'value': {'name': 'kbd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'auditd.service', 'value': {'name': 'auditd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'initrd-parse-etc.service', 'value': {'name': 'initrd-parse-etc.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'e2scrub_reap.service', 'value': {'name': 'e2scrub_reap.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'cron.service', 'value': {'name': 'cron.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'keyboard-setup.service', 'value': {'name': 'keyboard-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'chrony.service', 'value': {'name': 'chrony.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'initrd-switch-root.service', 'value': {'name': 'initrd-switch-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'emergency.service', 'value': {'name': 'emergency.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus.service', 'value': {'name': 'dbus.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'connman.service', 'value': {'name': 'connman.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'kmod-static-nodes.service', 'value': {'name': 'kmod-static-nodes.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'initrd-udevadm-cleanup-db.service', 'value': {'name': 'initrd-udevadm-cleanup-db.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'fstrim.service', 'value': {'name': 'fstrim.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'console-getty.service', 'value': {'name': 'console-getty.service', 'state': 'running', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'display-manager.service', 'value': {'name': 'display-manager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ldconfig.service', 'value': {'name': 'ldconfig.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'kbd.service', 'value': {'name': 'kbd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'getty-static.service', 'value': {'name': 'getty-static.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'console-screen.service', 'value': {'name': 'console-screen.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'keyboard-setup.service', 'value': {'name': 'keyboard-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'logrotate.service', 'value': {'name': 'logrotate.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dmesg.service', 'value': {'name': 'dmesg.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'getty@tty1.service', 'value': {'name': 'getty@tty1.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'console-setup.service', 'value': {'name': 'console-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'kmod-static-nodes.service', 'value': {'name': 'kmod-static-nodes.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'modprobe@configfs.service', 'value': {'name': 'modprobe@configfs.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dpkg-db-backup.service', 'value': {'name': 'dpkg-db-backup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'initrd-cleanup.service', 'value': {'name': 'initrd-cleanup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'cron.service', 'value': {'name': 'cron.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ldconfig.service', 'value': {'name': 'ldconfig.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'modprobe@drm.service', 'value': {'name': 'modprobe@drm.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'e2scrub_all.service', 'value': {'name': 'e2scrub_all.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'initrd-parse-etc.service', 'value': {'name': 'initrd-parse-etc.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'logrotate.service', 'value': {'name': 'logrotate.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus.service', 'value': {'name': 'dbus.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'modprobe@fuse.service', 'value': {'name': 'modprobe@fuse.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'e2scrub_reap.service', 'value': {'name': 'e2scrub_reap.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'modprobe@configfs.service', 'value': {'name': 'modprobe@configfs.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'initrd-switch-root.service', 'value': {'name': 'initrd-switch-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'emergency.service', 'value': {'name': 'emergency.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'motd-news.service', 'value': {'name': 'motd-news.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'display-manager.service', 'value': {'name': 'display-manager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'modprobe@drm.service', 'value': {'name': 'modprobe@drm.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'initrd-udevadm-cleanup-db.service', 'value': {'name': 'initrd-udevadm-cleanup-db.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'fstrim.service', 'value': {'name': 'fstrim.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'netplan-ovs-cleanup.service', 'value': {'name': 'netplan-ovs-cleanup.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dmesg.service', 'value': {'name': 'dmesg.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'modprobe@fuse.service', 'value': {'name': 'modprobe@fuse.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'kbd.service', 'value': {'name': 'kbd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'getty-static.service', 'value': {'name': 'getty-static.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dpkg-db-backup.service', 'value': {'name': 'dpkg-db-backup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'networkd-dispatcher.service', 'value': {'name': 'networkd-dispatcher.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'motd-news.service', 'value': {'name': 'motd-news.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'keyboard-setup.service', 'value': {'name': 'keyboard-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'getty@tty1.service', 'value': {'name': 'getty@tty1.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'e2scrub_all.service', 'value': {'name': 'e2scrub_all.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'NetworkManager.service', 'value': {'name': 'NetworkManager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'netplan-ovs-cleanup.service', 'value': {'name': 'netplan-ovs-cleanup.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'kmod-static-nodes.service', 'value': {'name': 'kmod-static-nodes.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'initrd-cleanup.service', 'value': {'name': 'initrd-cleanup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'nginx.service', 'value': {'name': 'nginx.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'e2scrub_reap.service', 'value': {'name': 'e2scrub_reap.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ldconfig.service', 'value': {'name': 'ldconfig.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'networkd-dispatcher.service', 'value': {'name': 'networkd-dispatcher.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'initrd-parse-etc.service', 'value': {'name': 'initrd-parse-etc.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ovsdb-server.service', 'value': {'name': 'ovsdb-server.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'emergency.service', 'value': {'name': 'emergency.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'logrotate.service', 'value': {'name': 'logrotate.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'NetworkManager.service', 'value': {'name': 'NetworkManager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'initrd-switch-root.service', 'value': {'name': 'initrd-switch-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'fstrim.service', 'value': {'name': 'fstrim.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'modprobe@configfs.service', 'value': {'name': 'modprobe@configfs.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'nginx.service', 'value': {'name': 'nginx.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'initrd-udevadm-cleanup-db.service', 'value': {'name': 'initrd-udevadm-cleanup-db.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'getty-static.service', 'value': {'name': 'getty-static.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'modprobe@drm.service', 'value': {'name': 'modprobe@drm.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'kbd.service', 'value': {'name': 'kbd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ovsdb-server.service', 'value': {'name': 'ovsdb-server.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'getty@tty1.service', 'value': {'name': 'getty@tty1.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'modprobe@fuse.service', 'value': {'name': 'modprobe@fuse.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'keyboard-setup.service', 'value': {'name': 'keyboard-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+ok: [staging-web1] => (item={'key': 'php8.4-fpm.service', 'value': {'name': 'php8.4-fpm.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'initrd-cleanup.service', 'value': {'name': 'initrd-cleanup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'motd-news.service', 'value': {'name': 'motd-news.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'kmod-static-nodes.service', 'value': {'name': 'kmod-static-nodes.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'phpsessionclean.service', 'value': {'name': 'phpsessionclean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'netplan-ovs-cleanup.service', 'value': {'name': 'netplan-ovs-cleanup.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'initrd-parse-etc.service', 'value': {'name': 'initrd-parse-etc.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ldconfig.service', 'value': {'name': 'ldconfig.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'networkd-dispatcher.service', 'value': {'name': 'networkd-dispatcher.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'plymouth-quit-wait.service', 'value': {'name': 'plymouth-quit-wait.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'logrotate.service', 'value': {'name': 'logrotate.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'initrd-switch-root.service', 'value': {'name': 'initrd-switch-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+ok: [staging-web2] => (item={'key': 'php8.4-fpm.service', 'value': {'name': 'php8.4-fpm.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'NetworkManager.service', 'value': {'name': 'NetworkManager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'plymouth-start.service', 'value': {'name': 'plymouth-start.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'modprobe@configfs.service', 'value': {'name': 'modprobe@configfs.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'initrd-udevadm-cleanup-db.service', 'value': {'name': 'initrd-udevadm-cleanup-db.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'phpsessionclean.service', 'value': {'name': 'phpsessionclean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'modprobe@drm.service', 'value': {'name': 'modprobe@drm.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'rc-local.service', 'value': {'name': 'rc-local.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'nginx.service', 'value': {'name': 'nginx.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'kbd.service', 'value': {'name': 'kbd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'plymouth-quit-wait.service', 'value': {'name': 'plymouth-quit-wait.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'modprobe@fuse.service', 'value': {'name': 'modprobe@fuse.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'rescue.service', 'value': {'name': 'rescue.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ovsdb-server.service', 'value': {'name': 'ovsdb-server.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'keyboard-setup.service', 'value': {'name': 'keyboard-setup.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'plymouth-start.service', 'value': {'name': 'plymouth-start.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'motd-news.service', 'value': {'name': 'motd-news.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'rsyslog.service', 'value': {'name': 'rsyslog.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'kmod-static-nodes.service', 'value': {'name': 'kmod-static-nodes.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'rc-local.service', 'value': {'name': 'rc-local.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'netplan-ovs-cleanup.service', 'value': {'name': 'netplan-ovs-cleanup.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'setvtrgb.service', 'value': {'name': 'setvtrgb.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ldconfig.service', 'value': {'name': 'ldconfig.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'rescue.service', 'value': {'name': 'rescue.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'networkd-dispatcher.service', 'value': {'name': 'networkd-dispatcher.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ssh.service', 'value': {'name': 'ssh.service', 'state': 'running', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'logrotate.service', 'value': {'name': 'logrotate.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'rsyslog.service', 'value': {'name': 'rsyslog.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'NetworkManager.service', 'value': {'name': 'NetworkManager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+ok: [prod-web1] => (item={'key': 'php8.4-fpm.service', 'value': {'name': 'php8.4-fpm.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'modprobe@configfs.service', 'value': {'name': 'modprobe@configfs.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'setvtrgb.service', 'value': {'name': 'setvtrgb.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-ask-password-console.service', 'value': {'name': 'systemd-ask-password-console.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'nginx.service', 'value': {'name': 'nginx.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'phpsessionclean.service', 'value': {'name': 'phpsessionclean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'modprobe@drm.service', 'value': {'name': 'modprobe@drm.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ssh.service', 'value': {'name': 'ssh.service', 'state': 'running', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-ask-password-wall.service', 'value': {'name': 'systemd-ask-password-wall.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ovsdb-server.service', 'value': {'name': 'ovsdb-server.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'plymouth-quit-wait.service', 'value': {'name': 'plymouth-quit-wait.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'modprobe@fuse.service', 'value': {'name': 'modprobe@fuse.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-battery-check.service', 'value': {'name': 'systemd-battery-check.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'sshd-keygen.service', 'value': {'name': 'sshd-keygen.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'plymouth-start.service', 'value': {'name': 'plymouth-start.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'motd-news.service', 'value': {'name': 'motd-news.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-binfmt.service', 'value': {'name': 'systemd-binfmt.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'sshd@sshd-keygen.service', 'value': {'name': 'sshd@sshd-keygen.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'rc-local.service', 'value': {'name': 'rc-local.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'netplan-ovs-cleanup.service', 'value': {'name': 'netplan-ovs-cleanup.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-bsod.service', 'value': {'name': 'systemd-bsod.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-ask-password-console.service', 'value': {'name': 'systemd-ask-password-console.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'rescue.service', 'value': {'name': 'rescue.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'networkd-dispatcher.service', 'value': {'name': 'networkd-dispatcher.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+ok: [prod-web2] => (item={'key': 'php8.4-fpm.service', 'value': {'name': 'php8.4-fpm.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-confext.service', 'value': {'name': 'systemd-confext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-ask-password-wall.service', 'value': {'name': 'systemd-ask-password-wall.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'rsyslog.service', 'value': {'name': 'rsyslog.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'NetworkManager.service', 'value': {'name': 'NetworkManager.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'phpsessionclean.service', 'value': {'name': 'phpsessionclean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-firstboot.service', 'value': {'name': 'systemd-firstboot.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-battery-check.service', 'value': {'name': 'systemd-battery-check.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'setvtrgb.service', 'value': {'name': 'setvtrgb.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'nginx.service', 'value': {'name': 'nginx.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'plymouth-quit-wait.service', 'value': {'name': 'plymouth-quit-wait.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-fsck-root.service', 'value': {'name': 'systemd-fsck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-binfmt.service', 'value': {'name': 'systemd-binfmt.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ssh.service', 'value': {'name': 'ssh.service', 'state': 'running', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ovsdb-server.service', 'value': {'name': 'ovsdb-server.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'plymouth-start.service', 'value': {'name': 'plymouth-start.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-fsckd.service', 'value': {'name': 'systemd-fsckd.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-bsod.service', 'value': {'name': 'systemd-bsod.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'sshd-keygen.service', 'value': {'name': 'sshd-keygen.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'rc-local.service', 'value': {'name': 'rc-local.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-hibernate-clear.service', 'value': {'name': 'systemd-hibernate-clear.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-confext.service', 'value': {'name': 'systemd-confext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'sshd@sshd-keygen.service', 'value': {'name': 'sshd@sshd-keygen.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'rescue.service', 'value': {'name': 'rescue.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-firstboot.service', 'value': {'name': 'systemd-firstboot.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-hibernate-resume.service', 'value': {'name': 'systemd-hibernate-resume.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-ask-password-console.service', 'value': {'name': 'systemd-ask-password-console.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'rsyslog.service', 'value': {'name': 'rsyslog.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-fsck-root.service', 'value': {'name': 'systemd-fsck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-hostnamed.service', 'value': {'name': 'systemd-hostnamed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+ok: [prod-web3] => (item={'key': 'php8.4-fpm.service', 'value': {'name': 'php8.4-fpm.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-ask-password-wall.service', 'value': {'name': 'systemd-ask-password-wall.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'setvtrgb.service', 'value': {'name': 'setvtrgb.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-hibernate-clear.service', 'value': {'name': 'systemd-hibernate-clear.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-hwdb-update.service', 'value': {'name': 'systemd-hwdb-update.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'phpsessionclean.service', 'value': {'name': 'phpsessionclean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-battery-check.service', 'value': {'name': 'systemd-battery-check.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ssh.service', 'value': {'name': 'ssh.service', 'state': 'running', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-hibernate-resume.service', 'value': {'name': 'systemd-hibernate-resume.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-initctl.service', 'value': {'name': 'systemd-initctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'plymouth-quit-wait.service', 'value': {'name': 'plymouth-quit-wait.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-binfmt.service', 'value': {'name': 'systemd-binfmt.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-hostnamed.service', 'value': {'name': 'systemd-hostnamed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-journal-catalog-update.service', 'value': {'name': 'systemd-journal-catalog-update.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'sshd-keygen.service', 'value': {'name': 'sshd-keygen.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'plymouth-start.service', 'value': {'name': 'plymouth-start.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-bsod.service', 'value': {'name': 'systemd-bsod.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-hwdb-update.service', 'value': {'name': 'systemd-hwdb-update.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-journal-flush.service', 'value': {'name': 'systemd-journal-flush.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'sshd@sshd-keygen.service', 'value': {'name': 'sshd@sshd-keygen.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-confext.service', 'value': {'name': 'systemd-confext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'rc-local.service', 'value': {'name': 'rc-local.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-initctl.service', 'value': {'name': 'systemd-initctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-journald.service', 'value': {'name': 'systemd-journald.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-ask-password-console.service', 'value': {'name': 'systemd-ask-password-console.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-firstboot.service', 'value': {'name': 'systemd-firstboot.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'rescue.service', 'value': {'name': 'rescue.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-journal-catalog-update.service', 'value': {'name': 'systemd-journal-catalog-update.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-logind.service', 'value': {'name': 'systemd-logind.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-ask-password-wall.service', 'value': {'name': 'systemd-ask-password-wall.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-fsck-root.service', 'value': {'name': 'systemd-fsck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'rsyslog.service', 'value': {'name': 'rsyslog.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-journal-flush.service', 'value': {'name': 'systemd-journal-flush.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-machine-id-commit.service', 'value': {'name': 'systemd-machine-id-commit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-battery-check.service', 'value': {'name': 'systemd-battery-check.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-hibernate-clear.service', 'value': {'name': 'systemd-hibernate-clear.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'setvtrgb.service', 'value': {'name': 'setvtrgb.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-journald.service', 'value': {'name': 'systemd-journald.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-modules-load.service', 'value': {'name': 'systemd-modules-load.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-binfmt.service', 'value': {'name': 'systemd-binfmt.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-hibernate-resume.service', 'value': {'name': 'systemd-hibernate-resume.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ssh.service', 'value': {'name': 'ssh.service', 'state': 'running', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-logind.service', 'value': {'name': 'systemd-logind.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-network-generator.service', 'value': {'name': 'systemd-network-generator.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-bsod.service', 'value': {'name': 'systemd-bsod.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-hostnamed.service', 'value': {'name': 'systemd-hostnamed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-machine-id-commit.service', 'value': {'name': 'systemd-machine-id-commit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-networkd-persistent-storage.service', 'value': {'name': 'systemd-networkd-persistent-storage.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'sshd-keygen.service', 'value': {'name': 'sshd-keygen.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-confext.service', 'value': {'name': 'systemd-confext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-hwdb-update.service', 'value': {'name': 'systemd-hwdb-update.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-modules-load.service', 'value': {'name': 'systemd-modules-load.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-networkd-wait-online.service', 'value': {'name': 'systemd-networkd-wait-online.service', 'state': 'stopped', 'status': 'failed', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-firstboot.service', 'value': {'name': 'systemd-firstboot.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-initctl.service', 'value': {'name': 'systemd-initctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'sshd@sshd-keygen.service', 'value': {'name': 'sshd@sshd-keygen.service', 'state': 'stopped', 'status': 'inactive', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-network-generator.service', 'value': {'name': 'systemd-network-generator.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-networkd.service', 'value': {'name': 'systemd-networkd.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-fsck-root.service', 'value': {'name': 'systemd-fsck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-journal-catalog-update.service', 'value': {'name': 'systemd-journal-catalog-update.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-ask-password-console.service', 'value': {'name': 'systemd-ask-password-console.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-networkd-persistent-storage.service', 'value': {'name': 'systemd-networkd-persistent-storage.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-oomd.service', 'value': {'name': 'systemd-oomd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-hibernate-clear.service', 'value': {'name': 'systemd-hibernate-clear.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-journal-flush.service', 'value': {'name': 'systemd-journal-flush.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-ask-password-wall.service', 'value': {'name': 'systemd-ask-password-wall.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-networkd-wait-online.service', 'value': {'name': 'systemd-networkd-wait-online.service', 'state': 'stopped', 'status': 'failed', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock-file-system.service', 'value': {'name': 'systemd-pcrlock-file-system.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-hibernate-resume.service', 'value': {'name': 'systemd-hibernate-resume.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-journald.service', 'value': {'name': 'systemd-journald.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-battery-check.service', 'value': {'name': 'systemd-battery-check.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-networkd.service', 'value': {'name': 'systemd-networkd.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock-firmware-code.service', 'value': {'name': 'systemd-pcrlock-firmware-code.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-hostnamed.service', 'value': {'name': 'systemd-hostnamed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-logind.service', 'value': {'name': 'systemd-logind.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-binfmt.service', 'value': {'name': 'systemd-binfmt.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-oomd.service', 'value': {'name': 'systemd-oomd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-hwdb-update.service', 'value': {'name': 'systemd-hwdb-update.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock-firmware-config.service', 'value': {'name': 'systemd-pcrlock-firmware-config.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-machine-id-commit.service', 'value': {'name': 'systemd-machine-id-commit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-bsod.service', 'value': {'name': 'systemd-bsod.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-initctl.service', 'value': {'name': 'systemd-initctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-modules-load.service', 'value': {'name': 'systemd-modules-load.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock-file-system.service', 'value': {'name': 'systemd-pcrlock-file-system.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock-machine-id.service', 'value': {'name': 'systemd-pcrlock-machine-id.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-confext.service', 'value': {'name': 'systemd-confext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-journal-catalog-update.service', 'value': {'name': 'systemd-journal-catalog-update.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-network-generator.service', 'value': {'name': 'systemd-network-generator.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock-firmware-code.service', 'value': {'name': 'systemd-pcrlock-firmware-code.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock-make-policy.service', 'value': {'name': 'systemd-pcrlock-make-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-firstboot.service', 'value': {'name': 'systemd-firstboot.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-journal-flush.service', 'value': {'name': 'systemd-journal-flush.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock-firmware-config.service', 'value': {'name': 'systemd-pcrlock-firmware-config.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock-secureboot-authority.service', 'value': {'name': 'systemd-pcrlock-secureboot-authority.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-networkd-persistent-storage.service', 'value': {'name': 'systemd-networkd-persistent-storage.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-fsck-root.service', 'value': {'name': 'systemd-fsck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-journald.service', 'value': {'name': 'systemd-journald.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock-machine-id.service', 'value': {'name': 'systemd-pcrlock-machine-id.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock-secureboot-policy.service', 'value': {'name': 'systemd-pcrlock-secureboot-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-networkd-wait-online.service', 'value': {'name': 'systemd-networkd-wait-online.service', 'state': 'stopped', 'status': 'failed', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-hibernate-clear.service', 'value': {'name': 'systemd-hibernate-clear.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-logind.service', 'value': {'name': 'systemd-logind.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock-make-policy.service', 'value': {'name': 'systemd-pcrlock-make-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrmachine.service', 'value': {'name': 'systemd-pcrmachine.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-networkd.service', 'value': {'name': 'systemd-networkd.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-hibernate-resume.service', 'value': {'name': 'systemd-hibernate-resume.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-machine-id-commit.service', 'value': {'name': 'systemd-machine-id-commit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock-secureboot-authority.service', 'value': {'name': 'systemd-pcrlock-secureboot-authority.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrphase-initrd.service', 'value': {'name': 'systemd-pcrphase-initrd.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-oomd.service', 'value': {'name': 'systemd-oomd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-hostnamed.service', 'value': {'name': 'systemd-hostnamed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-modules-load.service', 'value': {'name': 'systemd-modules-load.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock-secureboot-policy.service', 'value': {'name': 'systemd-pcrlock-secureboot-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrphase-sysinit.service', 'value': {'name': 'systemd-pcrphase-sysinit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock-file-system.service', 'value': {'name': 'systemd-pcrlock-file-system.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-hwdb-update.service', 'value': {'name': 'systemd-hwdb-update.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-network-generator.service', 'value': {'name': 'systemd-network-generator.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrphase.service', 'value': {'name': 'systemd-pcrphase.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrmachine.service', 'value': {'name': 'systemd-pcrmachine.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock-firmware-code.service', 'value': {'name': 'systemd-pcrlock-firmware-code.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-initctl.service', 'value': {'name': 'systemd-initctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-networkd-persistent-storage.service', 'value': {'name': 'systemd-networkd-persistent-storage.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pstore.service', 'value': {'name': 'systemd-pstore.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrphase-initrd.service', 'value': {'name': 'systemd-pcrphase-initrd.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock-firmware-config.service', 'value': {'name': 'systemd-pcrlock-firmware-config.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-journal-catalog-update.service', 'value': {'name': 'systemd-journal-catalog-update.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-networkd-wait-online.service', 'value': {'name': 'systemd-networkd-wait-online.service', 'state': 'stopped', 'status': 'failed', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-quotacheck-root.service', 'value': {'name': 'systemd-quotacheck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrphase-sysinit.service', 'value': {'name': 'systemd-pcrphase-sysinit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock-machine-id.service', 'value': {'name': 'systemd-pcrlock-machine-id.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-journal-flush.service', 'value': {'name': 'systemd-journal-flush.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-networkd.service', 'value': {'name': 'systemd-networkd.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-random-seed.service', 'value': {'name': 'systemd-random-seed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrphase.service', 'value': {'name': 'systemd-pcrphase.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock-make-policy.service', 'value': {'name': 'systemd-pcrlock-make-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-journald.service', 'value': {'name': 'systemd-journald.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-oomd.service', 'value': {'name': 'systemd-oomd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-remount-fs.service', 'value': {'name': 'systemd-remount-fs.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pstore.service', 'value': {'name': 'systemd-pstore.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock-secureboot-authority.service', 'value': {'name': 'systemd-pcrlock-secureboot-authority.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-logind.service', 'value': {'name': 'systemd-logind.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock-file-system.service', 'value': {'name': 'systemd-pcrlock-file-system.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-resolved.service', 'value': {'name': 'systemd-resolved.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-quotacheck-root.service', 'value': {'name': 'systemd-quotacheck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock-secureboot-policy.service', 'value': {'name': 'systemd-pcrlock-secureboot-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-machine-id-commit.service', 'value': {'name': 'systemd-machine-id-commit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock-firmware-code.service', 'value': {'name': 'systemd-pcrlock-firmware-code.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-soft-reboot.service', 'value': {'name': 'systemd-soft-reboot.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-random-seed.service', 'value': {'name': 'systemd-random-seed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrmachine.service', 'value': {'name': 'systemd-pcrmachine.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-modules-load.service', 'value': {'name': 'systemd-modules-load.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock-firmware-config.service', 'value': {'name': 'systemd-pcrlock-firmware-config.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-sysctl.service', 'value': {'name': 'systemd-sysctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-remount-fs.service', 'value': {'name': 'systemd-remount-fs.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrphase-initrd.service', 'value': {'name': 'systemd-pcrphase-initrd.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-network-generator.service', 'value': {'name': 'systemd-network-generator.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock-machine-id.service', 'value': {'name': 'systemd-pcrlock-machine-id.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-resolved.service', 'value': {'name': 'systemd-resolved.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrphase-sysinit.service', 'value': {'name': 'systemd-pcrphase-sysinit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-networkd-persistent-storage.service', 'value': {'name': 'systemd-networkd-persistent-storage.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock-make-policy.service', 'value': {'name': 'systemd-pcrlock-make-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-sysext.service', 'value': {'name': 'systemd-sysext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-soft-reboot.service', 'value': {'name': 'systemd-soft-reboot.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrphase.service', 'value': {'name': 'systemd-pcrphase.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-networkd-wait-online.service', 'value': {'name': 'systemd-networkd-wait-online.service', 'state': 'stopped', 'status': 'failed', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock-secureboot-authority.service', 'value': {'name': 'systemd-pcrlock-secureboot-authority.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-sysusers.service', 'value': {'name': 'systemd-sysusers.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pstore.service', 'value': {'name': 'systemd-pstore.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-networkd.service', 'value': {'name': 'systemd-networkd.service', 'state': 'running', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock-secureboot-policy.service', 'value': {'name': 'systemd-pcrlock-secureboot-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-sysctl.service', 'value': {'name': 'systemd-sysctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-timedated.service', 'value': {'name': 'systemd-timedated.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-oomd.service', 'value': {'name': 'systemd-oomd.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-quotacheck-root.service', 'value': {'name': 'systemd-quotacheck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrmachine.service', 'value': {'name': 'systemd-pcrmachine.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-sysext.service', 'value': {'name': 'systemd-sysext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-timesyncd.service', 'value': {'name': 'systemd-timesyncd.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock-file-system.service', 'value': {'name': 'systemd-pcrlock-file-system.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrphase-initrd.service', 'value': {'name': 'systemd-pcrphase-initrd.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-random-seed.service', 'value': {'name': 'systemd-random-seed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-sysusers.service', 'value': {'name': 'systemd-sysusers.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-tmpfiles-clean.service', 'value': {'name': 'systemd-tmpfiles-clean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock-firmware-code.service', 'value': {'name': 'systemd-pcrlock-firmware-code.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrphase-sysinit.service', 'value': {'name': 'systemd-pcrphase-sysinit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-remount-fs.service', 'value': {'name': 'systemd-remount-fs.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-timedated.service', 'value': {'name': 'systemd-timedated.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-tmpfiles-setup-dev-early.service', 'value': {'name': 'systemd-tmpfiles-setup-dev-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock-firmware-config.service', 'value': {'name': 'systemd-pcrlock-firmware-config.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrphase.service', 'value': {'name': 'systemd-pcrphase.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-resolved.service', 'value': {'name': 'systemd-resolved.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-timesyncd.service', 'value': {'name': 'systemd-timesyncd.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-tmpfiles-setup-dev.service', 'value': {'name': 'systemd-tmpfiles-setup-dev.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock-machine-id.service', 'value': {'name': 'systemd-pcrlock-machine-id.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-soft-reboot.service', 'value': {'name': 'systemd-soft-reboot.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pstore.service', 'value': {'name': 'systemd-pstore.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-tmpfiles-clean.service', 'value': {'name': 'systemd-tmpfiles-clean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-tmpfiles-setup.service', 'value': {'name': 'systemd-tmpfiles-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock-make-policy.service', 'value': {'name': 'systemd-pcrlock-make-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-quotacheck-root.service', 'value': {'name': 'systemd-quotacheck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-tmpfiles-setup-dev-early.service', 'value': {'name': 'systemd-tmpfiles-setup-dev-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-tpm2-setup-early.service', 'value': {'name': 'systemd-tpm2-setup-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-sysctl.service', 'value': {'name': 'systemd-sysctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock-secureboot-authority.service', 'value': {'name': 'systemd-pcrlock-secureboot-authority.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-tmpfiles-setup-dev.service', 'value': {'name': 'systemd-tmpfiles-setup-dev.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-random-seed.service', 'value': {'name': 'systemd-random-seed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-tpm2-setup.service', 'value': {'name': 'systemd-tpm2-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-sysext.service', 'value': {'name': 'systemd-sysext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock-secureboot-policy.service', 'value': {'name': 'systemd-pcrlock-secureboot-policy.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-tmpfiles-setup.service', 'value': {'name': 'systemd-tmpfiles-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-remount-fs.service', 'value': {'name': 'systemd-remount-fs.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-udev-load-credentials.service', 'value': {'name': 'systemd-udev-load-credentials.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-sysusers.service', 'value': {'name': 'systemd-sysusers.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrmachine.service', 'value': {'name': 'systemd-pcrmachine.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-tpm2-setup-early.service', 'value': {'name': 'systemd-tpm2-setup-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-resolved.service', 'value': {'name': 'systemd-resolved.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-udev-settle.service', 'value': {'name': 'systemd-udev-settle.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-timedated.service', 'value': {'name': 'systemd-timedated.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrphase-initrd.service', 'value': {'name': 'systemd-pcrphase-initrd.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-tpm2-setup.service', 'value': {'name': 'systemd-tpm2-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-soft-reboot.service', 'value': {'name': 'systemd-soft-reboot.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-udev-trigger.service', 'value': {'name': 'systemd-udev-trigger.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-timesyncd.service', 'value': {'name': 'systemd-timesyncd.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrphase-sysinit.service', 'value': {'name': 'systemd-pcrphase-sysinit.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-udev-load-credentials.service', 'value': {'name': 'systemd-udev-load-credentials.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-udevd.service', 'value': {'name': 'systemd-udevd.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-tmpfiles-clean.service', 'value': {'name': 'systemd-tmpfiles-clean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-sysctl.service', 'value': {'name': 'systemd-sysctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrphase.service', 'value': {'name': 'systemd-pcrphase.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-udev-settle.service', 'value': {'name': 'systemd-udev-settle.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-tmpfiles-setup-dev-early.service', 'value': {'name': 'systemd-tmpfiles-setup-dev-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-update-done.service', 'value': {'name': 'systemd-update-done.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-sysext.service', 'value': {'name': 'systemd-sysext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pstore.service', 'value': {'name': 'systemd-pstore.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-udev-trigger.service', 'value': {'name': 'systemd-udev-trigger.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-tmpfiles-setup-dev.service', 'value': {'name': 'systemd-tmpfiles-setup-dev.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-sysusers.service', 'value': {'name': 'systemd-sysusers.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-user-sessions.service', 'value': {'name': 'systemd-user-sessions.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-quotacheck-root.service', 'value': {'name': 'systemd-quotacheck-root.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-udevd.service', 'value': {'name': 'systemd-udevd.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-tmpfiles-setup.service', 'value': {'name': 'systemd-tmpfiles-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-timedated.service', 'value': {'name': 'systemd-timedated.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-vconsole-setup.service', 'value': {'name': 'systemd-vconsole-setup.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-random-seed.service', 'value': {'name': 'systemd-random-seed.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-tpm2-setup-early.service', 'value': {'name': 'systemd-tpm2-setup-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-update-done.service', 'value': {'name': 'systemd-update-done.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-timesyncd.service', 'value': {'name': 'systemd-timesyncd.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ua-auto-attach.service', 'value': {'name': 'ua-auto-attach.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-remount-fs.service', 'value': {'name': 'systemd-remount-fs.service', 'state': 'stopped', 'status': 'enabled-runtime', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-tpm2-setup.service', 'value': {'name': 'systemd-tpm2-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-user-sessions.service', 'value': {'name': 'systemd-user-sessions.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-tmpfiles-clean.service', 'value': {'name': 'systemd-tmpfiles-clean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ua-reboot-cmds.service', 'value': {'name': 'ua-reboot-cmds.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-resolved.service', 'value': {'name': 'systemd-resolved.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-udev-load-credentials.service', 'value': {'name': 'systemd-udev-load-credentials.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-vconsole-setup.service', 'value': {'name': 'systemd-vconsole-setup.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-tmpfiles-setup-dev-early.service', 'value': {'name': 'systemd-tmpfiles-setup-dev-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ua-timer.service', 'value': {'name': 'ua-timer.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-soft-reboot.service', 'value': {'name': 'systemd-soft-reboot.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-udev-settle.service', 'value': {'name': 'systemd-udev-settle.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ua-auto-attach.service', 'value': {'name': 'ua-auto-attach.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-tmpfiles-setup-dev.service', 'value': {'name': 'systemd-tmpfiles-setup-dev.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ubuntu-advantage-cloud-id-shim.service', 'value': {'name': 'ubuntu-advantage-cloud-id-shim.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-udev-trigger.service', 'value': {'name': 'systemd-udev-trigger.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ua-reboot-cmds.service', 'value': {'name': 'ua-reboot-cmds.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-sysctl.service', 'value': {'name': 'systemd-sysctl.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-tmpfiles-setup.service', 'value': {'name': 'systemd-tmpfiles-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ubuntu-advantage.service', 'value': {'name': 'ubuntu-advantage.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-udevd.service', 'value': {'name': 'systemd-udevd.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ua-timer.service', 'value': {'name': 'ua-timer.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-sysext.service', 'value': {'name': 'systemd-sysext.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-tpm2-setup-early.service', 'value': {'name': 'systemd-tpm2-setup-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'user-runtime-dir@501.service', 'value': {'name': 'user-runtime-dir@501.service', 'state': 'stopped', 'status': 'active', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-update-done.service', 'value': {'name': 'systemd-update-done.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ubuntu-advantage-cloud-id-shim.service', 'value': {'name': 'ubuntu-advantage-cloud-id-shim.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-tpm2-setup.service', 'value': {'name': 'systemd-tpm2-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-sysusers.service', 'value': {'name': 'systemd-sysusers.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'user@501.service', 'value': {'name': 'user@501.service', 'state': 'running', 'status': 'active', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-user-sessions.service', 'value': {'name': 'systemd-user-sessions.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ubuntu-advantage.service', 'value': {'name': 'ubuntu-advantage.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-udev-load-credentials.service', 'value': {'name': 'systemd-udev-load-credentials.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'apt-news.service', 'value': {'name': 'apt-news.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-timedated.service', 'value': {'name': 'systemd-timedated.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-vconsole-setup.service', 'value': {'name': 'systemd-vconsole-setup.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'user-runtime-dir@501.service', 'value': {'name': 'user-runtime-dir@501.service', 'state': 'stopped', 'status': 'active', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-udev-settle.service', 'value': {'name': 'systemd-udev-settle.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-timesyncd.service', 'value': {'name': 'systemd-timesyncd.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'autovt@.service', 'value': {'name': 'autovt@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ua-auto-attach.service', 'value': {'name': 'ua-auto-attach.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'user@501.service', 'value': {'name': 'user@501.service', 'state': 'running', 'status': 'active', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-udev-trigger.service', 'value': {'name': 'systemd-udev-trigger.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-tmpfiles-clean.service', 'value': {'name': 'systemd-tmpfiles-clean.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'capsule@.service', 'value': {'name': 'capsule@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ua-reboot-cmds.service', 'value': {'name': 'ua-reboot-cmds.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'apt-news.service', 'value': {'name': 'apt-news.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-udevd.service', 'value': {'name': 'systemd-udevd.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'container-getty@.service', 'value': {'name': 'container-getty@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-tmpfiles-setup-dev-early.service', 'value': {'name': 'systemd-tmpfiles-setup-dev-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ua-timer.service', 'value': {'name': 'ua-timer.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'autovt@.service', 'value': {'name': 'autovt@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-update-done.service', 'value': {'name': 'systemd-update-done.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'cryptdisks-early.service', 'value': {'name': 'cryptdisks-early.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-tmpfiles-setup-dev.service', 'value': {'name': 'systemd-tmpfiles-setup-dev.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ubuntu-advantage-cloud-id-shim.service', 'value': {'name': 'ubuntu-advantage-cloud-id-shim.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'capsule@.service', 'value': {'name': 'capsule@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-user-sessions.service', 'value': {'name': 'systemd-user-sessions.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'cryptdisks.service', 'value': {'name': 'cryptdisks.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-tmpfiles-setup.service', 'value': {'name': 'systemd-tmpfiles-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ubuntu-advantage.service', 'value': {'name': 'ubuntu-advantage.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'chronyd.service', 'value': {'name': 'chronyd.service', 'state': 'inactive', 'status': 'bad', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-vconsole-setup.service', 'value': {'name': 'systemd-vconsole-setup.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dbus-org.freedesktop.hostname1.service', 'value': {'name': 'dbus-org.freedesktop.hostname1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-tpm2-setup-early.service', 'value': {'name': 'systemd-tpm2-setup-early.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'user-runtime-dir@501.service', 'value': {'name': 'user-runtime-dir@501.service', 'state': 'stopped', 'status': 'active', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'container-getty@.service', 'value': {'name': 'container-getty@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ua-auto-attach.service', 'value': {'name': 'ua-auto-attach.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dbus-org.freedesktop.locale1.service', 'value': {'name': 'dbus-org.freedesktop.locale1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-tpm2-setup.service', 'value': {'name': 'systemd-tpm2-setup.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'user@501.service', 'value': {'name': 'user@501.service', 'state': 'running', 'status': 'active', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'cryptdisks-early.service', 'value': {'name': 'cryptdisks-early.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ua-reboot-cmds.service', 'value': {'name': 'ua-reboot-cmds.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dbus-org.freedesktop.login1.service', 'value': {'name': 'dbus-org.freedesktop.login1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-udev-load-credentials.service', 'value': {'name': 'systemd-udev-load-credentials.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'apt-news.service', 'value': {'name': 'apt-news.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'cryptdisks.service', 'value': {'name': 'cryptdisks.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ua-timer.service', 'value': {'name': 'ua-timer.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dbus-org.freedesktop.network1.service', 'value': {'name': 'dbus-org.freedesktop.network1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-udev-settle.service', 'value': {'name': 'systemd-udev-settle.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'autovt@.service', 'value': {'name': 'autovt@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ubuntu-advantage-cloud-id-shim.service', 'value': {'name': 'ubuntu-advantage-cloud-id-shim.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'dbus-org.freedesktop.hostname1.service', 'value': {'name': 'dbus-org.freedesktop.hostname1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-udev-trigger.service', 'value': {'name': 'systemd-udev-trigger.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dbus-org.freedesktop.timedate1.service', 'value': {'name': 'dbus-org.freedesktop.timedate1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'capsule@.service', 'value': {'name': 'capsule@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ubuntu-advantage.service', 'value': {'name': 'ubuntu-advantage.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'dbus-org.freedesktop.locale1.service', 'value': {'name': 'dbus-org.freedesktop.locale1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-udevd.service', 'value': {'name': 'systemd-udevd.service', 'state': 'running', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'dbus-org.freedesktop.timesync1.service', 'value': {'name': 'dbus-org.freedesktop.timesync1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'chronyd.service', 'value': {'name': 'chronyd.service', 'state': 'inactive', 'status': 'bad', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'user-runtime-dir@501.service', 'value': {'name': 'user-runtime-dir@501.service', 'state': 'stopped', 'status': 'active', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'dbus-org.freedesktop.login1.service', 'value': {'name': 'dbus-org.freedesktop.login1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-update-done.service', 'value': {'name': 'systemd-update-done.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'debug-shell.service', 'value': {'name': 'debug-shell.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'container-getty@.service', 'value': {'name': 'container-getty@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'user@501.service', 'value': {'name': 'user@501.service', 'state': 'running', 'status': 'active', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'dbus-org.freedesktop.network1.service', 'value': {'name': 'dbus-org.freedesktop.network1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'e2scrub@.service', 'value': {'name': 'e2scrub@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-user-sessions.service', 'value': {'name': 'systemd-user-sessions.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'cryptdisks-early.service', 'value': {'name': 'cryptdisks-early.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'apt-news.service', 'value': {'name': 'apt-news.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'e2scrub_fail@.service', 'value': {'name': 'e2scrub_fail@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-vconsole-setup.service', 'value': {'name': 'systemd-vconsole-setup.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'dbus-org.freedesktop.timedate1.service', 'value': {'name': 'dbus-org.freedesktop.timedate1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'cryptdisks.service', 'value': {'name': 'cryptdisks.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'autovt@.service', 'value': {'name': 'autovt@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'esm-cache.service', 'value': {'name': 'esm-cache.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ua-auto-attach.service', 'value': {'name': 'ua-auto-attach.service', 'state': 'stopped', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'dbus-org.freedesktop.timesync1.service', 'value': {'name': 'dbus-org.freedesktop.timesync1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus-org.freedesktop.hostname1.service', 'value': {'name': 'dbus-org.freedesktop.hostname1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'capsule@.service', 'value': {'name': 'capsule@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'getty@.service', 'value': {'name': 'getty@.service', 'state': 'unknown', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ua-reboot-cmds.service', 'value': {'name': 'ua-reboot-cmds.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'debug-shell.service', 'value': {'name': 'debug-shell.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus-org.freedesktop.locale1.service', 'value': {'name': 'dbus-org.freedesktop.locale1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'chronyd.service', 'value': {'name': 'chronyd.service', 'state': 'inactive', 'status': 'bad', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'hwclock.service', 'value': {'name': 'hwclock.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ua-timer.service', 'value': {'name': 'ua-timer.service', 'state': 'stopped', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'e2scrub@.service', 'value': {'name': 'e2scrub@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus-org.freedesktop.login1.service', 'value': {'name': 'dbus-org.freedesktop.login1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'container-getty@.service', 'value': {'name': 'container-getty@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'kmod.service', 'value': {'name': 'kmod.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ubuntu-advantage-cloud-id-shim.service', 'value': {'name': 'ubuntu-advantage-cloud-id-shim.service', 'state': 'stopped', 'status': 'not-found', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'e2scrub_fail@.service', 'value': {'name': 'e2scrub_fail@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus-org.freedesktop.network1.service', 'value': {'name': 'dbus-org.freedesktop.network1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'cryptdisks-early.service', 'value': {'name': 'cryptdisks-early.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'modprobe@.service', 'value': {'name': 'modprobe@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ubuntu-advantage.service', 'value': {'name': 'ubuntu-advantage.service', 'state': 'stopped', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'esm-cache.service', 'value': {'name': 'esm-cache.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'cryptdisks.service', 'value': {'name': 'cryptdisks.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus-org.freedesktop.timedate1.service', 'value': {'name': 'dbus-org.freedesktop.timedate1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'pam_namespace.service', 'value': {'name': 'pam_namespace.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'user-runtime-dir@501.service', 'value': {'name': 'user-runtime-dir@501.service', 'state': 'stopped', 'status': 'active', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'getty@.service', 'value': {'name': 'getty@.service', 'state': 'unknown', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus-org.freedesktop.hostname1.service', 'value': {'name': 'dbus-org.freedesktop.hostname1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'dbus-org.freedesktop.timesync1.service', 'value': {'name': 'dbus-org.freedesktop.timesync1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'user@501.service', 'value': {'name': 'user@501.service', 'state': 'running', 'status': 'active', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'procps.service', 'value': {'name': 'procps.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'hwclock.service', 'value': {'name': 'hwclock.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus-org.freedesktop.locale1.service', 'value': {'name': 'dbus-org.freedesktop.locale1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'debug-shell.service', 'value': {'name': 'debug-shell.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'apt-news.service', 'value': {'name': 'apt-news.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'quotaon-root.service', 'value': {'name': 'quotaon-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'kmod.service', 'value': {'name': 'kmod.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'e2scrub@.service', 'value': {'name': 'e2scrub@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'autovt@.service', 'value': {'name': 'autovt@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus-org.freedesktop.login1.service', 'value': {'name': 'dbus-org.freedesktop.login1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'quotaon@.service', 'value': {'name': 'quotaon@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'e2scrub_fail@.service', 'value': {'name': 'e2scrub_fail@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'modprobe@.service', 'value': {'name': 'modprobe@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'capsule@.service', 'value': {'name': 'capsule@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus-org.freedesktop.network1.service', 'value': {'name': 'dbus-org.freedesktop.network1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'serial-getty@.service', 'value': {'name': 'serial-getty@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'esm-cache.service', 'value': {'name': 'esm-cache.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'chronyd.service', 'value': {'name': 'chronyd.service', 'state': 'inactive', 'status': 'bad', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus-org.freedesktop.timedate1.service', 'value': {'name': 'dbus-org.freedesktop.timedate1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'pam_namespace.service', 'value': {'name': 'pam_namespace.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'sshd-unix-local@.service', 'value': {'name': 'sshd-unix-local@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'getty@.service', 'value': {'name': 'getty@.service', 'state': 'unknown', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'container-getty@.service', 'value': {'name': 'container-getty@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'dbus-org.freedesktop.timesync1.service', 'value': {'name': 'dbus-org.freedesktop.timesync1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'procps.service', 'value': {'name': 'procps.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'sshd.service', 'value': {'name': 'sshd.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'hwclock.service', 'value': {'name': 'hwclock.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'cryptdisks-early.service', 'value': {'name': 'cryptdisks-early.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'debug-shell.service', 'value': {'name': 'debug-shell.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'quotaon-root.service', 'value': {'name': 'quotaon-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'sshd@.service', 'value': {'name': 'sshd@.service', 'state': 'unknown', 'status': 'indirect', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'kmod.service', 'value': {'name': 'kmod.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'e2scrub@.service', 'value': {'name': 'e2scrub@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'cryptdisks.service', 'value': {'name': 'cryptdisks.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'quotaon@.service', 'value': {'name': 'quotaon@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'sudo.service', 'value': {'name': 'sudo.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'e2scrub_fail@.service', 'value': {'name': 'e2scrub_fail@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'serial-getty@.service', 'value': {'name': 'serial-getty@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus-org.freedesktop.hostname1.service', 'value': {'name': 'dbus-org.freedesktop.hostname1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'syslog.service', 'value': {'name': 'syslog.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'modprobe@.service', 'value': {'name': 'modprobe@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'esm-cache.service', 'value': {'name': 'esm-cache.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'sshd-unix-local@.service', 'value': {'name': 'sshd-unix-local@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus-org.freedesktop.locale1.service', 'value': {'name': 'dbus-org.freedesktop.locale1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'system-update-cleanup.service', 'value': {'name': 'system-update-cleanup.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'pam_namespace.service', 'value': {'name': 'pam_namespace.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'getty@.service', 'value': {'name': 'getty@.service', 'state': 'unknown', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'sshd.service', 'value': {'name': 'sshd.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-backlight@.service', 'value': {'name': 'systemd-backlight@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus-org.freedesktop.login1.service', 'value': {'name': 'dbus-org.freedesktop.login1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'procps.service', 'value': {'name': 'procps.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'hwclock.service', 'value': {'name': 'hwclock.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-boot-check-no-failures.service', 'value': {'name': 'systemd-boot-check-no-failures.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus-org.freedesktop.network1.service', 'value': {'name': 'dbus-org.freedesktop.network1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'sshd@.service', 'value': {'name': 'sshd@.service', 'state': 'unknown', 'status': 'indirect', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'quotaon-root.service', 'value': {'name': 'quotaon-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'kmod.service', 'value': {'name': 'kmod.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-creds@.service', 'value': {'name': 'systemd-creds@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus-org.freedesktop.timedate1.service', 'value': {'name': 'dbus-org.freedesktop.timedate1.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'sudo.service', 'value': {'name': 'sudo.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'quotaon@.service', 'value': {'name': 'quotaon@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-exit.service', 'value': {'name': 'systemd-exit.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'dbus-org.freedesktop.timesync1.service', 'value': {'name': 'dbus-org.freedesktop.timesync1.service', 'state': 'inactive', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'modprobe@.service', 'value': {'name': 'modprobe@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'syslog.service', 'value': {'name': 'syslog.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'serial-getty@.service', 'value': {'name': 'serial-getty@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-fsck@.service', 'value': {'name': 'systemd-fsck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'debug-shell.service', 'value': {'name': 'debug-shell.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'pam_namespace.service', 'value': {'name': 'pam_namespace.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'system-update-cleanup.service', 'value': {'name': 'system-update-cleanup.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'sshd-unix-local@.service', 'value': {'name': 'sshd-unix-local@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-growfs-root.service', 'value': {'name': 'systemd-growfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'e2scrub@.service', 'value': {'name': 'e2scrub@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'procps.service', 'value': {'name': 'procps.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'sshd.service', 'value': {'name': 'sshd.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-backlight@.service', 'value': {'name': 'systemd-backlight@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-growfs@.service', 'value': {'name': 'systemd-growfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'e2scrub_fail@.service', 'value': {'name': 'e2scrub_fail@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'quotaon-root.service', 'value': {'name': 'quotaon-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'sshd@.service', 'value': {'name': 'sshd@.service', 'state': 'unknown', 'status': 'indirect', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-boot-check-no-failures.service', 'value': {'name': 'systemd-boot-check-no-failures.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-halt.service', 'value': {'name': 'systemd-halt.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'esm-cache.service', 'value': {'name': 'esm-cache.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'quotaon@.service', 'value': {'name': 'quotaon@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'sudo.service', 'value': {'name': 'sudo.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-creds@.service', 'value': {'name': 'systemd-creds@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-hibernate.service', 'value': {'name': 'systemd-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'getty@.service', 'value': {'name': 'getty@.service', 'state': 'unknown', 'status': 'enabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'serial-getty@.service', 'value': {'name': 'serial-getty@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'syslog.service', 'value': {'name': 'syslog.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-exit.service', 'value': {'name': 'systemd-exit.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-hybrid-sleep.service', 'value': {'name': 'systemd-hybrid-sleep.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'sshd-unix-local@.service', 'value': {'name': 'sshd-unix-local@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'hwclock.service', 'value': {'name': 'hwclock.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'system-update-cleanup.service', 'value': {'name': 'system-update-cleanup.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-fsck@.service', 'value': {'name': 'systemd-fsck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-journald-sync@.service', 'value': {'name': 'systemd-journald-sync@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'sshd.service', 'value': {'name': 'sshd.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'kmod.service', 'value': {'name': 'kmod.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-backlight@.service', 'value': {'name': 'systemd-backlight@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-growfs-root.service', 'value': {'name': 'systemd-growfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-journald@.service', 'value': {'name': 'systemd-journald@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'sshd@.service', 'value': {'name': 'sshd@.service', 'state': 'unknown', 'status': 'indirect', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-boot-check-no-failures.service', 'value': {'name': 'systemd-boot-check-no-failures.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-growfs@.service', 'value': {'name': 'systemd-growfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'modprobe@.service', 'value': {'name': 'modprobe@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-kexec.service', 'value': {'name': 'systemd-kexec.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'sudo.service', 'value': {'name': 'sudo.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-creds@.service', 'value': {'name': 'systemd-creds@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-halt.service', 'value': {'name': 'systemd-halt.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'pam_namespace.service', 'value': {'name': 'pam_namespace.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-localed.service', 'value': {'name': 'systemd-localed.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'syslog.service', 'value': {'name': 'syslog.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-hibernate.service', 'value': {'name': 'systemd-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-exit.service', 'value': {'name': 'systemd-exit.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'procps.service', 'value': {'name': 'procps.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-networkd-wait-online@.service', 'value': {'name': 'systemd-networkd-wait-online@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'system-update-cleanup.service', 'value': {'name': 'system-update-cleanup.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-hybrid-sleep.service', 'value': {'name': 'systemd-hybrid-sleep.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-fsck@.service', 'value': {'name': 'systemd-fsck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'quotaon-root.service', 'value': {'name': 'quotaon-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrextend@.service', 'value': {'name': 'systemd-pcrextend@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-backlight@.service', 'value': {'name': 'systemd-backlight@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-journald-sync@.service', 'value': {'name': 'systemd-journald-sync@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-growfs-root.service', 'value': {'name': 'systemd-growfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'quotaon@.service', 'value': {'name': 'quotaon@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrfs-root.service', 'value': {'name': 'systemd-pcrfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-boot-check-no-failures.service', 'value': {'name': 'systemd-boot-check-no-failures.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-journald@.service', 'value': {'name': 'systemd-journald@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-growfs@.service', 'value': {'name': 'systemd-growfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'serial-getty@.service', 'value': {'name': 'serial-getty@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrfs@.service', 'value': {'name': 'systemd-pcrfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-creds@.service', 'value': {'name': 'systemd-creds@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-kexec.service', 'value': {'name': 'systemd-kexec.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-halt.service', 'value': {'name': 'systemd-halt.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'sshd-unix-local@.service', 'value': {'name': 'sshd-unix-local@.service', 'state': 'unknown', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-pcrlock@.service', 'value': {'name': 'systemd-pcrlock@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-exit.service', 'value': {'name': 'systemd-exit.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-localed.service', 'value': {'name': 'systemd-localed.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'sshd.service', 'value': {'name': 'sshd.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-poweroff.service', 'value': {'name': 'systemd-poweroff.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-hibernate.service', 'value': {'name': 'systemd-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-fsck@.service', 'value': {'name': 'systemd-fsck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-networkd-wait-online@.service', 'value': {'name': 'systemd-networkd-wait-online@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-quotacheck@.service', 'value': {'name': 'systemd-quotacheck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'sshd@.service', 'value': {'name': 'sshd@.service', 'state': 'unknown', 'status': 'indirect', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-growfs-root.service', 'value': {'name': 'systemd-growfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-hybrid-sleep.service', 'value': {'name': 'systemd-hybrid-sleep.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrextend@.service', 'value': {'name': 'systemd-pcrextend@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-reboot.service', 'value': {'name': 'systemd-reboot.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-growfs@.service', 'value': {'name': 'systemd-growfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-journald-sync@.service', 'value': {'name': 'systemd-journald-sync@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'sudo.service', 'value': {'name': 'sudo.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrfs-root.service', 'value': {'name': 'systemd-pcrfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-rfkill.service', 'value': {'name': 'systemd-rfkill.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-halt.service', 'value': {'name': 'systemd-halt.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-journald@.service', 'value': {'name': 'systemd-journald@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'syslog.service', 'value': {'name': 'syslog.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrfs@.service', 'value': {'name': 'systemd-pcrfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-storagetm.service', 'value': {'name': 'systemd-storagetm.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-hibernate.service', 'value': {'name': 'systemd-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-kexec.service', 'value': {'name': 'systemd-kexec.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'system-update-cleanup.service', 'value': {'name': 'system-update-cleanup.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-pcrlock@.service', 'value': {'name': 'systemd-pcrlock@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-suspend-then-hibernate.service', 'value': {'name': 'systemd-suspend-then-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-hybrid-sleep.service', 'value': {'name': 'systemd-hybrid-sleep.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-localed.service', 'value': {'name': 'systemd-localed.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-backlight@.service', 'value': {'name': 'systemd-backlight@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-poweroff.service', 'value': {'name': 'systemd-poweroff.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-suspend.service', 'value': {'name': 'systemd-suspend.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-journald-sync@.service', 'value': {'name': 'systemd-journald-sync@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-networkd-wait-online@.service', 'value': {'name': 'systemd-networkd-wait-online@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-boot-check-no-failures.service', 'value': {'name': 'systemd-boot-check-no-failures.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-quotacheck@.service', 'value': {'name': 'systemd-quotacheck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-sysext@.service', 'value': {'name': 'systemd-sysext@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-journald@.service', 'value': {'name': 'systemd-journald@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrextend@.service', 'value': {'name': 'systemd-pcrextend@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-creds@.service', 'value': {'name': 'systemd-creds@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-reboot.service', 'value': {'name': 'systemd-reboot.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-time-wait-sync.service', 'value': {'name': 'systemd-time-wait-sync.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-kexec.service', 'value': {'name': 'systemd-kexec.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrfs-root.service', 'value': {'name': 'systemd-pcrfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-exit.service', 'value': {'name': 'systemd-exit.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-rfkill.service', 'value': {'name': 'systemd-rfkill.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'systemd-volatile-root.service', 'value': {'name': 'systemd-volatile-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-localed.service', 'value': {'name': 'systemd-localed.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrfs@.service', 'value': {'name': 'systemd-pcrfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-fsck@.service', 'value': {'name': 'systemd-fsck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-storagetm.service', 'value': {'name': 'systemd-storagetm.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'ua-messaging.service', 'value': {'name': 'ua-messaging.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-networkd-wait-online@.service', 'value': {'name': 'systemd-networkd-wait-online@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-pcrlock@.service', 'value': {'name': 'systemd-pcrlock@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-growfs-root.service', 'value': {'name': 'systemd-growfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-suspend-then-hibernate.service', 'value': {'name': 'systemd-suspend-then-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'udev.service', 'value': {'name': 'udev.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrextend@.service', 'value': {'name': 'systemd-pcrextend@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-poweroff.service', 'value': {'name': 'systemd-poweroff.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-growfs@.service', 'value': {'name': 'systemd-growfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-suspend.service', 'value': {'name': 'systemd-suspend.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'user-runtime-dir@.service', 'value': {'name': 'user-runtime-dir@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrfs-root.service', 'value': {'name': 'systemd-pcrfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-quotacheck@.service', 'value': {'name': 'systemd-quotacheck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-halt.service', 'value': {'name': 'systemd-halt.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'user@.service', 'value': {'name': 'user@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-sysext@.service', 'value': {'name': 'systemd-sysext@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrfs@.service', 'value': {'name': 'systemd-pcrfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-reboot.service', 'value': {'name': 'systemd-reboot.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-hibernate.service', 'value': {'name': 'systemd-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'vconsole-setup-kludge@tty1.service', 'value': {'name': 'vconsole-setup-kludge@tty1.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-time-wait-sync.service', 'value': {'name': 'systemd-time-wait-sync.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-pcrlock@.service', 'value': {'name': 'systemd-pcrlock@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-rfkill.service', 'value': {'name': 'systemd-rfkill.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-hybrid-sleep.service', 'value': {'name': 'systemd-hybrid-sleep.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'systemd-volatile-root.service', 'value': {'name': 'systemd-volatile-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-poweroff.service', 'value': {'name': 'systemd-poweroff.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-storagetm.service', 'value': {'name': 'systemd-storagetm.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web1] => (item={'key': 'x11-common.service', 'value': {'name': 'x11-common.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-journald-sync@.service', 'value': {'name': 'systemd-journald-sync@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'ua-messaging.service', 'value': {'name': 'ua-messaging.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-quotacheck@.service', 'value': {'name': 'systemd-quotacheck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-suspend-then-hibernate.service', 'value': {'name': 'systemd-suspend-then-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-journald@.service', 'value': {'name': 'systemd-journald@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'udev.service', 'value': {'name': 'udev.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-suspend.service', 'value': {'name': 'systemd-suspend.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-reboot.service', 'value': {'name': 'systemd-reboot.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-kexec.service', 'value': {'name': 'systemd-kexec.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'user-runtime-dir@.service', 'value': {'name': 'user-runtime-dir@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-sysext@.service', 'value': {'name': 'systemd-sysext@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-rfkill.service', 'value': {'name': 'systemd-rfkill.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-localed.service', 'value': {'name': 'systemd-localed.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'user@.service', 'value': {'name': 'user@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-time-wait-sync.service', 'value': {'name': 'systemd-time-wait-sync.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-storagetm.service', 'value': {'name': 'systemd-storagetm.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-networkd-wait-online@.service', 'value': {'name': 'systemd-networkd-wait-online@.service', 'state': 'unknown', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'systemd-volatile-root.service', 'value': {'name': 'systemd-volatile-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'vconsole-setup-kludge@tty1.service', 'value': {'name': 'vconsole-setup-kludge@tty1.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrextend@.service', 'value': {'name': 'systemd-pcrextend@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-suspend-then-hibernate.service', 'value': {'name': 'systemd-suspend-then-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'ua-messaging.service', 'value': {'name': 'ua-messaging.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [staging-web2] => (item={'key': 'x11-common.service', 'value': {'name': 'x11-common.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrfs-root.service', 'value': {'name': 'systemd-pcrfs-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-suspend.service', 'value': {'name': 'systemd-suspend.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'udev.service', 'value': {'name': 'udev.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrfs@.service', 'value': {'name': 'systemd-pcrfs@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-sysext@.service', 'value': {'name': 'systemd-sysext@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'user-runtime-dir@.service', 'value': {'name': 'user-runtime-dir@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-pcrlock@.service', 'value': {'name': 'systemd-pcrlock@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-time-wait-sync.service', 'value': {'name': 'systemd-time-wait-sync.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'user@.service', 'value': {'name': 'user@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-poweroff.service', 'value': {'name': 'systemd-poweroff.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'systemd-volatile-root.service', 'value': {'name': 'systemd-volatile-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-quotacheck@.service', 'value': {'name': 'systemd-quotacheck@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'vconsole-setup-kludge@tty1.service', 'value': {'name': 'vconsole-setup-kludge@tty1.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'ua-messaging.service', 'value': {'name': 'ua-messaging.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-reboot.service', 'value': {'name': 'systemd-reboot.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web1] => (item={'key': 'x11-common.service', 'value': {'name': 'x11-common.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'udev.service', 'value': {'name': 'udev.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-rfkill.service', 'value': {'name': 'systemd-rfkill.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'user-runtime-dir@.service', 'value': {'name': 'user-runtime-dir@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-storagetm.service', 'value': {'name': 'systemd-storagetm.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'user@.service', 'value': {'name': 'user@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-suspend-then-hibernate.service', 'value': {'name': 'systemd-suspend-then-hibernate.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'vconsole-setup-kludge@tty1.service', 'value': {'name': 'vconsole-setup-kludge@tty1.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-suspend.service', 'value': {'name': 'systemd-suspend.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web2] => (item={'key': 'x11-common.service', 'value': {'name': 'x11-common.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-sysext@.service', 'value': {'name': 'systemd-sysext@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-time-wait-sync.service', 'value': {'name': 'systemd-time-wait-sync.service', 'state': 'inactive', 'status': 'disabled', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'systemd-volatile-root.service', 'value': {'name': 'systemd-volatile-root.service', 'state': 'inactive', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'ua-messaging.service', 'value': {'name': 'ua-messaging.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'udev.service', 'value': {'name': 'udev.service', 'state': 'active', 'status': 'alias', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'user-runtime-dir@.service', 'value': {'name': 'user-runtime-dir@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'user@.service', 'value': {'name': 'user@.service', 'state': 'unknown', 'status': 'static', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'vconsole-setup-kludge@tty1.service', 'value': {'name': 'vconsole-setup-kludge@tty1.service', 'state': 'inactive', 'status': 'masked-runtime', 'source': 'systemd'}})
+skipping: [prod-web3] => (item={'key': 'x11-common.service', 'value': {'name': 'x11-common.service', 'state': 'inactive', 'status': 'masked', 'source': 'systemd'}})
+
+TASK [php-fpm-setup : Fail if no PHP-FPM service was detected] *********************************************************************************************************************************************************
+skipping: [staging-web1]
+skipping: [staging-web2]
+skipping: [prod-web1]
+skipping: [prod-web2]
+skipping: [prod-web3]
+
+TASK [php-fpm-setup : Ensure PHP-FPM service is started and enabled] ***************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [staging-web2]
+ok: [prod-web3]
+
+TASK [deploy-app : Determine DB host for this web server] **************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+
+TASK [deploy-app : Ensure app directory exists] ************************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+
+TASK [deploy-app : Deploy application configuration file] **************************************************************************************************************************************************************
+changed: [prod-web3]
+changed: [prod-web1]
+changed: [prod-web2]
+changed: [staging-web2]
+changed: [staging-web1]
+
+TASK [deploy-app : Deploy application files] ***************************************************************************************************************************************************************************
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [staging-web1]
+ok: [prod-web3]
+ok: [prod-web2]
+
+TASK [deploy-app : Find PHP-FPM socket] ********************************************************************************************************************************************************************************
+ok: [prod-web2]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web3]
+ok: [staging-web1]
+
+TASK [deploy-app : Set PHP-FPM socket path fact] ***********************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+
+TASK [deploy-app : Fail if PHP-FPM socket not found] *******************************************************************************************************************************************************************
+skipping: [staging-web1]
+skipping: [staging-web2]
+skipping: [prod-web1]
+skipping: [prod-web2]
+skipping: [prod-web3]
+
+TASK [deploy-app : Deploy Nginx site configuration] ********************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+
+TASK [deploy-app : Enable Nginx site] **********************************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+
+TASK [deploy-app : Remove default Nginx site] **************************************************************************************************************************************************************************
+ok: [staging-web1]
+ok: [staging-web2]
+ok: [prod-web1]
+ok: [prod-web2]
+ok: [prod-web3]
+
+PLAY RECAP *************************************************************************************************************************************************************************************************************
+prod-db1                   : ok=17   changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+prod-web1                  : ok=21   changed=1    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0
+prod-web2                  : ok=21   changed=1    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0
+prod-web3                  : ok=21   changed=1    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0
+staging-db1                : ok=17   changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+staging-web1               : ok=21   changed=1    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0
+staging-web2               : ok=21   changed=1    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0
