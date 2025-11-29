@@ -1,5 +1,4 @@
-app_name: kapsulekorp
-app_root: /var/www/html
-
-db_name: kapsulekorp
-db_user: kapsulekorp
+mysql_root_password_prod: "Respons11"                                                                                                                                                                                   
+mysql_root_password_staging: "Respons12"                                                                                                                                                                                
+db_password_prod: "Respons11"                                                                                                                                                                                           
+db_password_staging: "Respons12"       
