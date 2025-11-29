@@ -1,14 +1,26 @@
-- import_tasks: prerequirements.yml
-
 - name: Install PHP-FPM and dependencies
   ansible.builtin.apt:
     name:
-      - "php{{ php_version }}-fpm"
-      - "php{{ php_version }}-mysql"
+      - "php-fpm"
+      - "php-mysql"
     state: present
+
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Detect PHP-FPM service name
+  ansible.builtin.set_fact:
+    php_fpm_service: "{{ item.key }}"
+  loop: "{{ ansible_facts.services | dict2items }}"
+  when: item.key is match('^php[0-9.]*-fpm.service$')
+
+- name: Fail if no PHP-FPM service was detected
+  ansible.builtin.fail:
+    msg: "Could not detect PHP-FPM service."
+  when: php_fpm_service is not defined
 
 - name: Ensure PHP-FPM service is started and enabled
   ansible.builtin.service:
-    name: "php{{ php_version }}-fpm"
+    name: "{{ php_fpm_service }}"
     state: started
     enabled: yes
