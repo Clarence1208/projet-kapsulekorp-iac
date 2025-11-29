@@ -6,7 +6,7 @@ resource "orbstack_linux_vm" "staging_web" {
   distro = var.distro
 
   provisioner "local-exec" {
-    command = "orb -m ${self.name} --shell \"sudo apt update && sudo apt upgrade -y && sudo apt install -y openssh-server\""
+    command = "orb -m ${self.name} --shell \"mkdir -p ~/.ssh && echo '$(cat ~/.ssh/id_ed25519.pub)' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys\""
   }
 }
 
@@ -16,7 +16,7 @@ resource "orbstack_linux_vm" "staging_db" {
   distro = var.distro
 
   provisioner "local-exec" {
-    command = "orb -m ${self.name} --shell \"sudo apt update && sudo apt upgrade -y && sudo apt install -y openssh-server\""
+    command = "orb -m ${self.name} --shell \"mkdir -p ~/.ssh && echo '$(cat ~/.ssh/id_ed25519.pub)' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys\""
   }
 }
 
@@ -28,7 +28,7 @@ resource "orbstack_linux_vm" "production_web" {
   distro = var.distro
 
   provisioner "local-exec" {
-    command = "orb -m ${self.name} --shell \"sudo apt update && sudo apt upgrade -y && sudo apt install -y openssh-server\""
+    command = "orb -m ${self.name} --shell \"mkdir -p ~/.ssh && echo '$(cat ~/.ssh/id_ed25519.pub)' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys\""
   }
 }
 
@@ -38,6 +38,6 @@ resource "orbstack_linux_vm" "production_db" {
   distro = var.distro
 
   provisioner "local-exec" {
-    command = "orb -m ${self.name} --shell \"sudo apt update && sudo apt upgrade -y && sudo apt install -y openssh-server\""
+    command = "orb -m ${self.name} --shell \"mkdir -p ~/.ssh && echo '$(cat ~/.ssh/id_ed25519.pub)' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys\""
   }
 }

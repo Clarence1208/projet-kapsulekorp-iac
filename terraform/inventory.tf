@@ -5,7 +5,9 @@ resource "local_file" "ansible_inventory" {
     orbstack_linux_vm.production_web,
     orbstack_linux_vm.production_db,
   ]
-  filename   = "${path.module}/terraform-inventory.ini"
+  filename             = "../terraform-inventory.ini"
+  file_permission      = "0644"
+  directory_permission = "0755"
   content    = <<EOF
 [staging-web]
 %{for vm in orbstack_linux_vm.staging_web~}
