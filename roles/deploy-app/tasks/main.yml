@@ -22,7 +22,7 @@
 
 - name: "Deploy application configuration file"
   ansible.builtin.template:
-    src: ../templates/config.php.j2
+    src: templates/config.php.j2
     dest: "{{ app_root }}/config.php"
     owner: www-data
     group: www-data
@@ -35,7 +35,7 @@
 
 - name: "Deploy application files"
   ansible.builtin.copy:
-    src: ../files/index.php
+    src: files/index.php
     dest: "{{ app_root }}/index.php"
     owner: www-data
     group: www-data
