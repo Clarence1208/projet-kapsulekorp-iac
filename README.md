@@ -44,16 +44,16 @@ ansible all -m ping -i inventory.ini
 
 if some pings fails try to ssh into the managed node by hand to add the host to the list of known hosts.
 
-## Modify the {.vars/secret-vars.yml} file to add the correct sudo password for the managed nodes
+## Modify the {.group_vars/all/vault.yml} file to add the correct sudo password for the managed nodes
 
 This need to be done in the ansible controller
 
-## Encrypt the {.vars/secret-vars.yml} file
+## Encrypt the {.group_vars/all/vault.yml} file
 
 This need to be done in the ansible controller
 
 ```bash
-ansible-vault encrypt vars/secret-vars.yml
+ansible-vault encrypt group_vars/all/vault.yml
 ```
 
 ## Run the playbook
@@ -70,20 +70,12 @@ ansible-playbook --ask-vault-pass playbook/site-deployment.yml
 
 ## OrbStack Terraform Provider
 
-## If not already done, encrypt the {.vars/secret-vars.yml} file
+## If not already done, encrypt the {.group_vars/all/vault.yml} file
 
 This need to be done in the ansible controller
 
 ```bash
-ansible-vault encrypt vars/secret-vars.yml
-```
-
-### Build the OrbStack Terraform Provider
-
-```bash
-cd orbstack-teraform-integration
-go build -o terraform-provider-orbstack
-cd ..
+ansible-vault encrypt group_vars/all/vault.yml
 ```
 
 ## Initialize terraform
