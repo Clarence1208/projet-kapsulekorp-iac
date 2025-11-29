@@ -3,4 +3,5 @@ inventory.ini
 orbstack-teraform-integration/terraform-provider-orbstack
 terraform.tfstate
 terraform.tfstate.backup
-terrform.lock.hcl
+.terraform.tfstate.lock.info
+terraform.lock.hcl
