@@ -1,6 +1,0 @@
-provider_installation {
-  dev_overrides {
-    "local/orbstack" = "absolute/path/to/your/local/orbstack/provider"
-  }
-  direct {}
-}

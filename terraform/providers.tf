@@ -1,8 +1,7 @@
 terraform {
   required_providers {
     orbstack = {
-      source  = "local/orbstack"
-      version = "1.0.0"
+      source = "robertdebock/orbstack"
     }
     local = {
       source  = "hashicorp/local"
@@ -14,5 +13,3 @@ terraform {
     }
   }
 }
-
-provider "orbstack" {}

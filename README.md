@@ -70,28 +70,12 @@ ansible-playbook --ask-vault-pass playbook/site-deployment.yml
 
 ## OrbStack Terraform Provider
 
-### Init the terraform config with the script
+## If not already done, encrypt the {.vars/secret-vars.yml} file
+
+This need to be done in the ansible controller
 
 ```bash
-./init-terraform.sh
-```
-
-if you get an execution permission error run
-
-```bash
-chmod +x init-terraform.sh
-```
-
-### Untrack the terraform.rc file from git
-
-```bash
-git update-index --skip-worktree terraform.rc
-```
-
-undo this command with
-
-```bash
-git update-index --no-skip-worktree terraform.rc
+ansible-vault encrypt vars/secret-vars.yml
 ```
 
 ### Build the OrbStack Terraform Provider
@@ -102,8 +86,26 @@ go build -o terraform-provider-orbstack
 cd ..
 ```
 
+## Initialize terraform
+
+```bash
+cd terraform
+terraform init
+cd ..
+```
+
 ## run terraform commands
 
 ```bash
+cd terraform
 terraform apply -var="vault_password=YOUR_ANSIBLE_VAULT_PASSWORD"
+cd ..
+```
+
+or to be prompted for the vault password
+
+```bash
+cd terraform
+terraform apply
+cd ..
 ```
