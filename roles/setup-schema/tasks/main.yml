@@ -7,7 +7,7 @@
       }}
     db_password: >-
       {{
-        (inventory_hostname in groups['production-web'])
+        (inventory_hostname in groups['production'])
           | ternary(db_password_prod, db_password_staging)
       }}
 
@@ -23,12 +23,12 @@
     login_user: root
     login_password: "{{ mysql_root_password }}"
     query:
-      - "CREATE USER IF NOT EXISTS '{{ db_user }}'@'localhost'
+      - "CREATE USER IF NOT EXISTS '{{ db_user }}'@'%'
            IDENTIFIED WITH caching_sha2_password BY '{{ db_password }}';"
-      - "ALTER USER '{{ db_user }}'@'localhost'
+      - "ALTER USER '{{ db_user }}'@'%'
            IDENTIFIED WITH caching_sha2_password BY '{{ db_password }}';"
       - "GRANT ALL PRIVILEGES ON {{ db_name }}.*
-           TO '{{ db_user }}'@'localhost';"
+           TO '{{ db_user }}'@'%';"
   no_log: true
 
 - name: Copy SQL schema to db server
@@ -50,4 +50,8 @@
     path: /etc/mysql/mysql.conf.d/mysqld.cnf
     regexp: '^bind-address'
     line: "bind-address = {{ mysql_bind_address }}"
-  notify: Restart mysql
+
+- name: Restart mysql
+  ansible.builtin.service:
+    name: mysql
+    state: restarted

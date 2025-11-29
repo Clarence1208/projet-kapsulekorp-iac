@@ -1,0 +1,20 @@
+server {
+    listen 80;
+    server_name {{ inventory_hostname }};
+    root {{ app_root }};
+
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:{{ php_fpm_socket_path }};
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
